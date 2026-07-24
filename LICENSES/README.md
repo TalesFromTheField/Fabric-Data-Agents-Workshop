@@ -2,7 +2,7 @@
 
 # Workshop: Kubernetes - From Bare Metal to SQL Server Big Data Clusters
 
-#### <i>A Microsoft Course from the SQL Server team</i>
+#### <i>A Microsoft Course from the Tales from the Field team</i>
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
