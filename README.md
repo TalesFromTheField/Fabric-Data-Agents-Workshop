@@ -1,14 +1,14 @@
 ![](graphics/microsoftlogo.png)
 
-# Workshop: <TODO: Enter workshop name>
+# Workshop: Fabric Data Agents and Beyond
 
-#### <i>A Microsoft Course from the SQL Server team</i>
+#### <i>A Microsoft Course from the Tales from the Field team</i>
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <img style="float: left; margin: 0px 15px 15px 0px;" src="https://raw.githubusercontent.com/microsoft/sqlworkshops/master/graphics/textbubble.png"> <h2>About this Workshop</h2>
 
-Welcome to this Microsoft solutions workshop on *<TODO: Enter workshop name>*. In this workshop, you'll learn <TODO: Describe what the students will learn>
+Welcome to this Microsoft solutions workshop on *Fabric Data Agents and Beyond*. In this workshop, you'll learn <TODO: Describe what the students will learn>
 
 The focus of this workshop is to understand <TODO: Describe the workshop's primay focus in one sentence>
 
@@ -105,7 +105,7 @@ This workshop uses <TODO: enter main technologies used to solve the sceanrio>, w
 
 <img style="float: left; margin: 0px 15px 15px 0px;" src="https://raw.githubusercontent.com/microsoft/sqlworkshops/master/graphics/pinmap.png"> <h2>Related Workshops</h2>
 
- - [TODO: Enter any other workshops that help in this area](url)
+ - [Fabric for the Data Professional](https://github.com/TalesFromTheField/Fabric-DataPro-Overview-Workshop)
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -117,18 +117,14 @@ This is a modular workshop, and in each section, you'll learn concepts, technolo
 
   <tr><td style="background-color: AliceBlue; color: black;"><b>Module</b></td><td style="background-color: AliceBlue; color: black;"><b>Topics</b></td></tr>
 
-  <tr><td><a href="https://github.com/yorek/sqlworkshops-sqldev/blob/master/sqldev/01%20-%20Introduction%20and%20Overview.md" target="_blank">01 - Introduction and Overview </a></td><td> Introductions, pre-requisites check, environment setup, overview of the workshop</td></tr>
-  
-  <tr><td style="background-color: AliceBlue; color: black;"><a href="https://github.com/yorek/sqlworkshops-sqldev/blob/master/sqldev/02%20-%20Tool%20Enhancements.md" target="_blank">02 - Tool Enhancements</a> </td><td td style="background-color: AliceBlue; color: black;"> Implementing the features of SQLCMD-GO</td></tr>
-  
-  <tr><td><a href="https://github.com/yorek/sqlworkshops-sqldev/blob/master/sqldev/03%20-%20Native%20Ingtegrations%20with%20Other%20Services.md" target="_blank">03 - Native Integrations with Other Services </a></td><td>  REST and GraphQL support via Data API Builder, OneLake Integration </td></tr>
-
-  <tr><td><a href="https://github.com/yorek/sqlworkshops-sqldev/blob/master/sqldev/04%20-%20JSON%20Enhancements.md" target="_blank">04 - JSON Enhancements </a></td><td> Overview (OPENJSON + FOR JSON), Newly added feature JSON_OBJECT, Tips & Tricks (Use JSON to pass arrays to SPs), JSON Data Type </td></tr>
-  
-  <tr><td style="background-color: AliceBlue; color: black;"><a href="https://github.com/yorek/sqlworkshops-sqldev/blob/master/sqldev/05%20-%20Function%20Enhancements.md" target="_blank">05 - Function Enhancements</a> </td>
-    <td td style="background-color: AliceBlue; color: black;"> New String Functions</td></tr>  
-    
-   <tr><td><a href="https://github.com/yorek/sqlworkshops-sqldev/blob/master/sqldev/06%20-%20Engine%20Enhancements.md" target="_blank">06 - Engine Enhancements </a></td><td> Optimized Locking</td></tr>
+  <tr><td><a href="\modules\00 - Pre-Requisites.md" target="_blank">00 - Pre-Requisites </a></td><td> Pre-requisites check, environment setup, overview of the workshop</td></tr>
+  <tr><td><a href="\modules\01 - Introduction and Overview.md" target="_blank">01 - Fabric IQ </a></td><td> <TODO: Insert Module 01 Quick Summary></td></tr>
+  <tr><td><a href="\modules\02 - Fabric Data Agents.md" target="_blank">02 - Fabric Data Agents</a></td><td> <TODO: Insert Module 02 Quick Summary></td></tr>
+  <tr><td><a href="\modules\03 - Fabric Data Agents - In Use.md" target="_blank">03 - Fabric Data Agents - In Use </a></td><td>  <TODO: Insert Module 03 Quick Summary> </td></tr>
+  <tr><td><a href="\modules\04 - Data Modeling for AI and Ontologies.md" target="_blank">04 - Data Modeling for AI & Ontologies </a></td><td> <TODO: Insert Module 04 Quick Summary> </td></tr>  
+  <tr><td><a href="\modules\05 - Fabric Graph and Fabric Ontologies.md" target="_blank">05 - Fabric Graph & Fabric Ontologies</a></td><td> <TODO: Insert Module 05 Quick Summary> </td></tr>  
+  <tr><td><a href="\modules\06 - RTI, Operations Agents, and Data Agents.md" target="_blank">06 - RTI, Operations Agents, and Data Agents </a></td><td> <TODO: Insert Module 06 Quick Summary> </td></tr>
+  <tr><td><a href="\modules\07 - Extending Data Agents Beyond Microsoft Fabric.md" target="_blank">07 - Extending Data Agents Beyond Microsoft Fabric </a></td><td> <TODO: Insert Module 07 Quick Summary> </td></tr>
   
 </table>
 
@@ -137,7 +133,7 @@ This is a modular workshop, and in each section, you'll learn concepts, technolo
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="https://raw.githubusercontent.com/microsoft/sqlworkshops/master/graphics/geopin.png"><b>Next Steps</b></p>
 
 
-Next, Continue to <a href="https://github.com/yorek/sqlworkshops-sqldev/blob/master/sqldev/00%20-%20Pre-Requisites.md" target="_blank"><i> Pre-Requisites</i></a>
+Next, Continue to <a href="\modules\00 - Pre-Requisites.md" target="_blank"><i> Pre-Requisites</i></a>
 
 # Contributing
 

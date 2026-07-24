@@ -1,31 +1,30 @@
 ![](../graphics/microsoftlogo.png)
 
-# Workshop: Developer Enhancements for SQL Server and Azure SQL DB
+# Workshop: Microsoft Fabric Data Agents and Beyond
 
-#### <i>A Microsoft workshop from the SQL Server team</i>
+#### <i>A workshop from the Tales from the Field team</i>
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/textbubble.png"> <h2>JSON Enhancements</h2>
+<img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/textbubble.png"> <h2>Fabric Data Agents - In Use</h2>
 
-In this workshop you'll cover using <TODO: Enter a brief description of the workshop>. 
+In this module you'll cover using <TODO: Enter a brief description of the module>. 
 
-In each module you'll get more references, which you should follow up on to learn more. Also watch for links within the text - click on each one to explore that topic.
+In each section you'll get more references, which you should follow up on to learn more. Also watch for links within the text - click on each one to explore that topic.
 
-(<a href="file:///url" target="_blank">Make sure you check out the <b>Pre-Requisites</b> page before you start</a>. You'll need all of the items loaded there before you can proceed with the workshop.)
+(<a href="\00 - Pre-Requisites.md" target="_blank">Make sure you check out the <b>Pre-Requisites</b> page before you start</a>. You'll need all of the items loaded there before you can proceed with the workshop.)
 
 You'll cover these topics in the workshop:
 <dl>
 
-  <dt><a href="url" target="_blank">01 - <TODO: Enter Module Name<dt>
-  <dt><a href="url" target="_blank">01 - <TODO: Enter Module Name<dt>
-  <dt><a href="url" target="_blank">01 - <TODO: Enter Module Name<dt>
+  <dt><a href="#3.1" target="_blank">01 - <TODO: Enter Section Name><dt>
+  <dt><a href="#3.2" target="_blank">01 - <TODO: Enter Section Name><dt>
 
 </dl>
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">1.1 TODO: Topic Name</h2>
+<h2 id="3-1"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">1.1 TODO: Topic Name</h2>
 
 TODO: Topic Description
 
@@ -49,7 +48,7 @@ TODO: Enter activity steps description with checkbox
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">1.2 TODO: Topic Name</h2>
+<h2 id="3-2"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">1.2 TODO: Topic Name</h2>
 
 TODO: Topic Description
 
@@ -72,4 +71,4 @@ TODO: Enter activity steps description with checkbox
     <li><a href="url" target="_blank">TODO: Enter courses, books, posts, whatever the student needs to extend their study</a></li>
 </ul>
 
-Congratulations! You have completed this workshop on <TODO: Enter workshop name>. You now have the tools, assets, and processes you need to extrapolate this information into other applications.
+Congratulations! You have completed this workshop on <TODO: Enter module name>. You now have the tools, assets, and processes you need to extrapolate this information into other applications.
