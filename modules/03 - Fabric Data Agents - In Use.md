@@ -17,14 +17,14 @@ In each section you'll get more references, which you should follow up on to lea
 You'll cover these topics in the workshop:
 <dl>
 
-  <dt><a href="#3.1" target="_blank">01 - <TODO: Enter Section Name><dt>
-  <dt><a href="#3.2" target="_blank">01 - <TODO: Enter Section Name><dt>
+  <dt><a href="#1.1" target="_blank">01 - <TODO: Enter Section Name><dt>
+  <dt><a href="#1.2" target="_blank">01 - <TODO: Enter Section Name><dt>
 
 </dl>
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="3-1"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">1.1 TODO: Topic Name</h2>
+<h2 id="1.1"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">1.1 TODO: Topic Name</h2>
 
 TODO: Topic Description
 
@@ -48,7 +48,7 @@ TODO: Enter activity steps description with checkbox
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="3-2"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">1.2 TODO: Topic Name</h2>
+<h2 id="1.2"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">1.2 TODO: Topic Name</h2>
 
 TODO: Topic Description
 
@@ -71,4 +71,4 @@ TODO: Enter activity steps description with checkbox
     <li><a href="url" target="_blank">TODO: Enter courses, books, posts, whatever the student needs to extend their study</a></li>
 </ul>
 
-Congratulations! You have completed this workshop on <TODO: Enter module name>. You now have the tools, assets, and processes you need to extrapolate this information into other applications.
+Congratulations! You have completed this module on <TODO: Enter module name>. You now have the tools, assets, and processes you need to extrapolate this information into other applications.
