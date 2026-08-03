@@ -8,15 +8,15 @@
 
 <img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/textbubble.png"> <h2> 07 - Extending Data Agents Beyond Microsoft Fabric </h2>
 
-In this module you'll cover taking the Fabric data agent you built in the previous modules and putting it in front of the people who actually need it - in Microsoft Foundry, in Copilot Studio and Teams, in your own Python applications, and in Microsoft 365 Copilot.
+In this module you'll cover taking the Fabric data agent you built in the previous modules and putting it in front of the people who actually need it - in Microsoft Foundry, in Copilot Studio and Teams, in your own Python applications, in Microsoft 365 Copilot, and through the open Model Context Protocol - and how Microsoft Entra ID keeps the security model intact the whole way.
 
 In each module you'll get more references, which you should follow up on to learn more. Also watch for links within the text - click on each one to explore that topic.
 
-(<a href="https://github.com/TalesFromTheField/Fabric-Data-Agents-Workshop/blob/main/modules/00%20-%20Pre-Requisites.md">Make sure you check out the <b>Pre-Requisites</b> page before you start</a>. You'll need all of the items loaded there before you can proceed with the workshop.) *Note that every integration in this module requires a paid **F2 or higher** Fabric capacity (or a P1 or higher Power BI Premium capacity with Fabric enabled), a **published** data agent, and the AI cross-geo tenant settings turned on. All four of these consumption paths are currently in **preview**.
+(<a href="https://github.com/TalesFromTheField/Fabric-Data-Agents-Workshop/blob/main/modules/00%20-%20Pre-Requisites.md">Make sure you check out the <b>Pre-Requisites</b> page before you start</a>. You'll need all of the items loaded there before you can proceed with the workshop.) *Note that every integration in this module requires a paid **F2 or higher** Fabric capacity (or a P1 or higher Power BI Premium capacity with Fabric enabled), a **published** data agent, and the AI cross-geo tenant settings turned on. All of these consumption paths are currently in **preview**.
 
 Here's the thing nobody tells you when you build your first data agent: the hard part is already done. You picked the data sources. You wrote the instructions. You added the example queries and argued with the model about what "active customer" actually means. That work - the semantics, the grounding, the security model - is the agent. The Fabric portal is just the first place you happened to talk to it.
 
-This module is about the second, third, fourth, and fifth places. And the good news is you don't rebuild anything. A published Fabric data agent is an endpoint with an identity attached, and every integration in this module is a different front door to that same endpoint. Row-level security still applies. Column-level security still applies. If a user can't see the table in the lakehouse, they can't get an answer about it from Teams either. That's not a limitation, that's the whole point.
+This module is about all the other places. And the good news is you don't rebuild anything. A published Fabric data agent is an endpoint with an identity attached, and every integration in this module is a different front door to that same endpoint. Row-level security still applies. Column-level security still applies. If a user can't see the table in the lakehouse, they can't get an answer about it from Teams either. That's not a limitation, that's the whole point.
 
 You'll cover these topics in this Module on Extending Data Agents Beyond Microsoft Fabric:
 
@@ -26,6 +26,8 @@ You'll cover these topics in this Module on Extending Data Agents Beyond Microso
   <dt><a href="#7-2">7.2 - Connecting to Data Agents via Copilot Studio &amp; Teams</a></dt>
   <dt><a href="#7-3">7.3 - Connecting to Data Agents via the Python SDK</a></dt>
   <dt><a href="#7-4">7.4 - Connecting to Data Agents via Microsoft 365</a></dt>
+  <dt><a href="#7-5">7.5 - Data Agents &amp; Security - How Entra ID Holds the Line</a></dt>
+  <dt><a href="#7-6">7.6 - Data Agent as a Model Context Protocol (MCP) Server</a></dt>
 
 </dl>
 
@@ -33,7 +35,7 @@ You'll cover these topics in this Module on Extending Data Agents Beyond Microso
 
 <h2 id="7-0"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">Before You Start - Three Things That Break Everything</h2>
 
-Every single integration in this module fails in exactly the same three ways, so let's get them out of the way once instead of four times.
+Every single integration in this module fails in exactly the same three ways, so let's get them out of the way once instead of five times.
 
 **1. The agent has to be published.** A data agent that only exists in draft is invisible to every service outside Fabric. If your agent doesn't appear in a picker list in Foundry, Copilot Studio, or the Microsoft 365 Agent Store, this is the reason about 80% of the time. Publish it, and give it a *rich, detailed description* while you're at it - the downstream orchestrators read that description to decide when to call your agent. A description that says "data agent" gets called never.
 
@@ -360,9 +362,213 @@ You need a Microsoft 365 Copilot license or Office 365 commercial subscription, 
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="7-5"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">Choosing Between Them</h2>
+<h2 id="7-5"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">7.5 - Data Agents &amp; Security - How Entra ID Holds the Line</h2>
 
-Four doors, one agent. Here's the short version to steal for your own architecture review:
+Every conversation about data agents eventually arrives at the same question, usually asked by someone in the back of the room with their arms folded: *"So you've built a thing that writes its own queries against my warehouse and hands the answers to anybody who asks it nicely. What could possibly go wrong?"*
+
+It's a fair question. And the answer is the single most important concept in this entire module, so it gets its own section.
+
+**A Fabric data agent has no data access of its own.** None. It is not a service that holds credentials to your lakehouse. It doesn't have a privileged account quietly reading everything so it can be helpful later. When a question comes in, the agent generates a query and runs it **as the identity of the caller**, using that caller's Microsoft Entra ID token. If the person asking can't read the table, the query fails for them the same way it would fail in SQL. Row-level security applies. Column-level security applies. Workspace permissions apply. Data source permissions apply.
+
+This is why the agent is safe to put in Teams. Not because we bolted a filter onto the chat window - because there was never a second, more powerful path to the data in the first place.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Two people, one agent, two different answers</b></p>
+
+Say this out loud in your next design review, because it reframes the whole thing: two users can ask a shared data agent the *exact same question* and correctly receive *different answers*. The regional manager sees their region. The VP sees all regions. Nobody configured that in the agent. It falls out of the identity model.
+
+That also means "the agent gave my colleague no results" is almost never a bug. It's a permissions conversation. Sharing the **agent** does not share the **data** - a point worth repeating because it's the number one support ticket across every integration in this module.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>How identity flows through each integration</b></p>
+
+The mechanism has a different name in each service, but it's the same idea every time:
+
+| Integration | How identity reaches Fabric |
+| --- | --- |
+| **Microsoft Foundry** | Identity Passthrough (On-Behalf-Of). The end user's identity flows through the Azure AI agent into Fabric. |
+| **Copilot Studio / Teams** | **User authentication** mode passes each user's identity. **Agent author authentication** runs as *you* - choose deliberately. |
+| **Python client SDK** | `InteractiveBrowserCredential` - the user signs in with their own Entra ID credentials in a browser. |
+| **Microsoft 365 Copilot** | The signed-in Microsoft 365 user's identity, same tenant, same account. |
+| **MCP server** | A bearer token in the `Authorization` header, representing a user **or** a service principal. |
+
+Notice the one row that can break the pattern: **Agent author authentication** in Copilot Studio. That mode is legitimate - it's how you build an agent over data your users can't individually access but are allowed to see aggregated. But it moves the security boundary from Entra to *your agent's instructions*, and instructions are not a security control. Use it on purpose, document it, and never use it as a shortcut around a permissions request you didn't feel like filing.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>When there is no user - service principal authentication</b></p>
+
+Identity passthrough is elegant right up until 3am, when there is no human to pass through. Scheduled jobs, background services, CI/CD pipelines, and unattended applications need a non-interactive identity - and for that, Fabric data agents support **Microsoft Entra service principals (SPN)**.
+
+An SPN is a non-interactive, application-based identity that you can grant precise permissions on Azure and Fabric resources. Critically, **the data agent treats an SPN exactly like any other Entra identity**. The rules don't relax because a robot is asking. The SPN only reads schemas and runs queries against the data sources *it* has been granted access to.
+
+Setting one up is five steps:
+
+1. **Register the application in Microsoft Entra ID.** In the <a href="https://entra.microsoft.com">Microsoft Entra admin center</a> go to **Entra ID** → **App registrations** → **New registration**. Name it something you'll recognize in an audit log six months from now - `fabric-data-agent-spn` beats `test2`. Set **Supported account types** to *Accounts in this organizational directory only*. Copy the **Application (client) ID** and **Directory (tenant) ID**, then add a credential - a certificate or federated identity credential if your security policy allows, a client secret if it doesn't. You need at least the **Cloud Application Administrator** role to do this yourself; otherwise ask your Entra admin for the App ID, secret, and tenant ID.
+2. **Enable service principals to use Fabric APIs.** A Fabric tenant admin goes to the <a href="https://learn.microsoft.com/en-us/fabric/admin/admin-center">Fabric admin portal</a> → **Tenant settings** → **Developer settings** and enables **Service principals can use Fabric APIs**. Scope it to a security group containing your SPN rather than the entire organization, unless you enjoy explaining that decision later.
+3. **Grant the SPN access to the workspace.** A workspace **Admin** or **Member** opens the workspace → **Manage access** → **Add people or groups**, searches for the SPN by app name, and assigns **Member** or **Contributor**. Only give it **Admin** if it genuinely needs to manage the workspace.
+4. **Grant the SPN access to the data sources.** This is the step people miss. At minimum read access on *every* source attached to the agent. Sharing the data agent item is not enough.
+5. **Acquire a token and call the agent.** The SPN authenticates to Entra using the <a href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow">client credentials flow</a>, requesting a token for the Fabric resource (`https://analysis.windows.net/powerbi/api/.default`), and passes the result as a bearer token when asking the agent questions. That endpoint is for *querying* the agent with natural language - it isn't for managing or configuring it.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Three limitations to write on the whiteboard now</b></p>
+
+- **Managed identities are not currently supported.** You have to use a service principal. If your platform standard is "managed identity everywhere," this is a conversation to have before you commit to a delivery date.
+- **The SPN needs explicit access to every data source.** Again. Because it's the one that gets you.
+- **Service principal authentication is not yet supported for data agents connected to a KQL database (Kusto).** If your agent has a KQL source, unattended access is off the table for now.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Finally - watch what it actually did</b></p>
+
+Security isn't only about prevention, it's about being able to answer "who asked what, and what did the system do about it" after the fact. Fabric data agent interactions can be audited through Microsoft Purview, and Foundry gives you observability on the agent side. Wire both up before you go to production, not after someone asks for them in an incident review. Links are in the activity below.
+
+<p><a href="https://youtu.be/1OOe9-EteL0"><img src="https://img.youtube.com/vi/1OOe9-EteL0/0.jpg" height = 200></a></p>
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Prove the security boundary, then automate it</b></p>
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
+
+- Apply row-level security to one of your data agent's underlying sources if it doesn't already have it.
+- Have two users with different entitlements ask the agent the *same* question. Confirm they get different, correct answers. This is the demo that ends the argument.
+- Open the following link in another tab and follow the instructions: <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-service-principal">Use service principal authentication with Fabric data agent</a>
+- Register a service principal, enable **Service principals can use Fabric APIs**, and grant it workspace **and** data source access.
+- Call your data agent with the SPN using the client credentials flow. Then *deliberately* remove its access to one data source and call it again - watch it fail exactly the way it should.
+- Review <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-purview-governance">Audit data agent interactions with Microsoft Purview</a> and confirm you can see the interactions.
+- Review <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing">Fabric data agent sharing and permission management</a> and document who has which role on your agent.
+
+> If you only reviewed the documentation in this Activity, ensure you bookmark each of these references and then perform the Activity in full once you do have your deployment.
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+<h2 id="7-6"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">7.6 - Data Agent as a Model Context Protocol (MCP) Server</h2>
+
+Everything in sections 7.1 through 7.4 is a *named* integration. Microsoft built a connector for Foundry, one for Copilot Studio, one for Microsoft 365. That's great - right up until you want to use something Microsoft didn't build a connector for.
+
+The **Model Context Protocol (MCP)** is the answer to that problem. It's an emerging open standard that defines how an AI system discovers what tools are available and interacts with them in a consistent way. Instead of writing a bespoke integration for every client, you expose your capability once and any MCP-speaking client can use it.
+
+MCP has two halves:
+
+- An **MCP client** is the app the user interacts with - where you ask questions or trigger actions. Visual Studio Code acts as an MCP client when it connects to external tools.
+- An **MCP server** exposes tools, data, or services and tells the client what's available and how to use it.
+
+Your published Fabric data agent can be an MCP server. And when it is, the agent stops being "a thing with four supported front ends" and becomes a standard endpoint. That's why this section exists even though it's listed last - strategically it may end up being the most important one on this page.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>How it works</b></p>
+
+A published data agent exposes exactly **one MCP tool**, and that tool *is* the agent. A client sends a question to the tool and gets back an answer grounded in the data the agent can reach in OneLake.
+
+Because the client decides when to call the tool, **your published description becomes the tool description the MCP server advertises**. Third time this module has told you to write a good description, and this is the most literal version of it: orchestrators read that text to decide whether to call your agent at all. A vague description means your beautifully tuned agent sits there never being invoked, and you'll blame the model.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>"MCP client" doesn't mean a product</b></p>
+
+Anything that speaks MCP is an MCP client. It doesn't have to be VS Code, and it doesn't have to use a particular SDK - it just has to follow the protocol. That matters because **this is not a plain REST API**. A connection follows the MCP message flow: an `initialize` handshake, a `tools/list` call to discover the tool, then `tools/call` to ask a question. An SDK like the <a href="https://pypi.org/project/mcp/">MCP Python SDK</a> handles that for you; you can also implement it yourself over HTTP. What won't work is firing a generic HTTP POST at the endpoint and skipping the handshake. If you take one troubleshooting note from this section, take that one.
+
+Also note: the data agent MCP server **doesn't support dynamic client registration**. Your client can't register itself and obtain credentials through the protocol. You acquire a Fabric token through your own auth flow and attach it to every request.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Getting the endpoint</b></p>
+
+After you publish the agent, open its **Settings** and go to the **Model Context Protocol** tab. You'll find the MCP server name, the **MCP server URL**, the MCP tool name, and the tool description. You can also download an **mcp.json** file from that tab for clients that read that format - VS Code, for instance.
+
+Or build the URL yourself:
+
+```http
+https://api.fabric.microsoft.com/v1/mcp/workspaces/{WorkspaceId}/dataagents/{DataAgentId}/agent
+```
+
+A hand-built URL only works **after** the agent is published. If it isn't, the endpoint returns an error even when the URL is perfectly correct - which is a fun forty minutes if you don't know that going in.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Authentication</b></p>
+
+Every request needs a bearer token in the `Authorization` header, with permission on the target workspace and data agent. The token can represent a **user** or a **service principal** - which is exactly where section 7.5 comes back around. Request the token for the `https://api.fabric.microsoft.com/.default` scope. VS Code prompts you to sign in interactively; in a script you acquire the token yourself with <a href="https://pypi.org/project/azure-identity/">azure-identity</a>.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Connecting from Python</b></p>
+
+You'll need Python 3.10+, the packages, and a way to sign in to Fabric. This example uses the Azure CLI - run `az login` first with an account that has access to the workspace and agent.
+
+```bash
+pip install mcp azure-identity
+```
+
+```python
+import asyncio
+
+from azure.identity import AzureCliCredential
+from mcp import ClientSession
+from mcp.client.streamable_http import streamablehttp_client
+
+workspace_id = "<your-workspace-id>"
+data_agent_id = "<your-data-agent-id>"
+question = "<your question>"
+
+mcp_url = (
+    f"https://api.fabric.microsoft.com/v1/mcp/workspaces/{workspace_id}"
+    f"/dataagents/{data_agent_id}/agent"
+)
+
+credential = AzureCliCredential()
+
+def get_auth_headers():
+    token = credential.get_token("https://api.fabric.microsoft.com/.default")
+    return {"Authorization": f"Bearer {token.token}"}
+```
+
+Now open the connection, run the handshake, discover the tool, and ask:
+
+```python
+async def query_data_agent(question):
+    headers = get_auth_headers()
+
+    async with streamablehttp_client(mcp_url, headers=headers) as (read, write, _):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+
+            # The data agent exposes a single tool. Discover it, then call it.
+            tools = await session.list_tools()
+            tool = tools.tools[0]
+            question_arg = next(iter(tool.inputSchema["properties"]))
+
+            result = await session.call_tool(tool.name, {question_arg: question})
+
+            answers = [block.text for block in result.content if block.type == "text"]
+            return "\n".join(answers)
+
+answer = asyncio.run(query_data_agent(question))
+print(answer)
+```
+
+Note the small piece of good engineering in there: the script reads the *first* tool the server advertises and pulls the question argument name out of the tool's input schema instead of hard-coding it. If the tool name or argument name changes, your code keeps working. Steal that pattern.
+
+`AzureCliCredential` reuses your `az login` session, which is fine for development. To run unattended, swap in `ClientSecretCredential` or `DefaultAzureCredential` with a service principal - **the rest of the code is identical**. That's the whole payoff of section 7.5.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Connecting from Visual Studio Code</b></p>
+
+1. Open a folder in VS Code and create a **.vscode** folder inside it.
+2. Create a file named `mcp.json` in **.vscode**.
+3. Select the blue **Add Server** button at the bottom right, choose **HTTP**, and paste the **MCP server URL**.
+4. Press **Enter** and give the server a display name.
+5. VS Code attempts to authenticate - select **Allow** and sign in.
+
+Then turn on agent mode: **Command Palette** (Ctrl+Shift+P) → **Enable Agent Mode** → confirm the prompts. Pick an orchestrator - in preview the list includes GPT-5, GPT-4.1, Claude Sonnet 4.5, and Gemini 2.5 Pro among others - and start asking questions right in the editor. The orchestrator routes each question to the data agent MCP server and the agent answers from OneLake.
+
+Sit with that for a second. Your governed enterprise data, grounded and permission-checked, answering questions inside the editor while a developer is writing code against it. No export. No copy of the data. No screenshot pasted into a chat.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>The compliance note, one last time</b></p>
+
+When you consume a data agent as an MCP server, responses may be sent outside Fabric's compliance boundary or geographic region and are processed and stored according to the terms and data-handling policies of **whichever MCP client you use**. With named integrations you at least know whose policy applies. With an open protocol, that's now a question you have to ask about every client your organization adopts. Add it to your review checklist.
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Stand up your data agent as an MCP server</b></p>
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
+
+- Open the following link in another tab and follow the instructions: <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-mcp-server">Data agent as Model Context Protocol server (preview)</a>
+- Publish your data agent, then open **Settings** → **Model Context Protocol** and copy the **MCP server URL**. Download the **mcp.json** while you're there.
+- Connect from Python with the MCP SDK. Run `az login` first, then ask a question and print the answer.
+- Add the same server to Visual Studio Code, enable **Agent Mode**, and ask the same question from the editor. Compare the two answers.
+- Swap `AzureCliCredential` for a service principal credential from section 7.5 and run the Python client unattended.
+- Read your agent's published description as though you were an orchestrator deciding whether to call it. If you wouldn't call it, rewrite it.
+- If you built anything on the Python client SDK in section 7.3, sketch your migration to this endpoint. Remember the **August 26, 2026** Assistants API shutdown date.
+
+> If you only reviewed the documentation in this Activity, ensure you bookmark each of these references and then perform the Activity in full once you do have your deployment.
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+<h2 id="7-7"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">Choosing Between Them</h2>
+
+Five doors, one agent. Here's the short version to steal for your own architecture review:
 
 | If you need... | Use | Watch out for |
 | --- | --- | --- |
@@ -370,8 +576,10 @@ Four doors, one agent. Here's the short version to steal for your own architectu
 | Low-code, business-built agents delivered in Teams | **Copilot Studio** | Only validated for Teams; must enable generative AI orchestration; not supported in M365 Copilot |
 | Your own app, custom UX, or automation | **Python client SDK** | Assistants API shuts down **Aug 26, 2026** - plan the MCP migration |
 | Broad reach to business users already in Teams | **Microsoft 365 Copilot** | M365 orchestrator reshapes responses; per-user licensing |
+| Any MCP-speaking client, or a future-proof endpoint | **MCP server** | Must follow the MCP handshake; no dynamic client registration; client's data policy applies |
+| Unattended jobs, pipelines, background services | **Service principal** (with any of the above) | No managed identity support; not supported with KQL sources |
 
-And the thing that's true of all four: publish the agent, write a genuinely good description, keep everyone on one tenant, get the tenant switches enabled, and let user identity carry the security. Do those five things and the rest is mostly clicking.
+And the thing that's true of all of them: publish the agent, write a genuinely good description, keep everyone on one tenant, get the tenant switches enabled, and let Entra ID carry the security. Do those five things and the rest is mostly clicking.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -396,4 +604,4 @@ And the thing that's true of all four: publish the agent, write a genuinely good
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-Congratulations! You have completed this Module. Your data agent is no longer something that lives in a portal - it's an endpoint your organization can reach from wherever they already work, with the governance intact. You now have the tools, assets, and processes you need to extrapolate this information into other applications.
+Congratulations! You have completed this Module. Your data agent is no longer something that lives in a portal - it's an endpoint your organization can reach from wherever they already work, with Entra ID keeping the governance intact at every door. You now have the tools, assets, and processes you need to extrapolate this information into other applications.
