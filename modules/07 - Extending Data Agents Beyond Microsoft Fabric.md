@@ -29,6 +29,7 @@ You'll cover these topics in this Module on Extending Data Agents Beyond Microso
   <dt><a href="#7-5">7.5 - Data Agents &amp; Security - How Entra ID Holds the Line</a></dt>
   <dt><a href="#7-6">7.6 - Data Agent as a Model Context Protocol (MCP) Server</a></dt>
   <dt><a href="#7-7">7.7 - Source Control, CI/CD, and ALM for Data Agents</a></dt>
+  <dt><a href="#7-8">7.8 - Best Practices for Configuring Your Data Agent</a></dt>
 
 </dl>
 
@@ -720,7 +721,223 @@ Straight from the field, and none of these will surprise you:
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="7-8"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">Choosing Between Them</h2>
+<h2 id="7-8"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">7.8 - Best Practices for Configuring Your Data Agent</h2>
+
+We're going to close this module by going right back to the beginning, and there's a reason for that.
+
+Everything in sections 7.1 through 7.7 is a **distribution problem**. Foundry, Copilot Studio, Teams, Python, Microsoft 365, MCP, CI/CD - all of it is machinery for getting your agent's answers in front of more people, more reliably, in more places. None of it makes the answers *better*.
+
+Which means every one of those integrations is an amplifier. Point it at a well-configured agent and you've just made a great capability available to your whole organization. Point it at a sloppy one and you've industrialized the distribution of confidently-worded wrong numbers - to executives, in Teams, at scale, with your name on it.
+
+So before you ship any of this, work through the following. These are the practices Microsoft publishes, with the field notes attached.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>1. Get your data AI ready</b></p>
+
+The agent reads your schema to understand your business. If your schema is gibberish, your business is gibberish as far as the model is concerned.
+
+- ❌ Tables named `Table1`, `Table2`. Columns named `col1`, `status`, `flag`.
+- ✅ Tables named `CustomerOrders`, `ProductCatalog`, `SalesTransactions`. Columns named `customer_email_address`, `order_submission_date`, `product_unit_price`.
+
+Twenty years of "we'll rename it later" finally has a price tag attached. Descriptive naming isn't cosmetic anymore - it's the model's primary source of context.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>2. Build specialized agents, not one agent to rule them all</b></p>
+
+- ❌ A general-purpose agent that answers every customer-related question for every persona.
+- ✅ An agent tailored to support the leadership team by combining sources for meeting prep.
+
+Narrow scope means targeted instructions, relevant sources, and domain-specific terminology. It also means less ambiguity for the model to guess its way through. This one has a nice side effect: remember that in Foundry you can attach exactly **one** Fabric data agent per Azure AI agent. If you've built specialized agents, that constraint stops being a problem and starts being an architecture.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>3. Minimize the data source scope</b></p>
+
+Include only the sources needed to answer expected questions, and within each source select only the relevant tables and columns.
+
+- ❌ Connecting an entire lakehouse or model with every table and column.
+- ✅ Selecting only the essential tables and columns for common queries.
+
+**For optimal results, limit each data source to 25 tables or fewer.** Write that number down. "I connected the whole warehouse and it got worse" is a conversation you can now skip entirely.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>4. Say what to do, not just what not to do</b></p>
+
+- ❌ "Do not provide outdated pay information or make assumptions about missing data."
+- ✅ "Always provide the most recent pay information available from the official payroll system. If the pay is missing or incomplete, inform the employee that you cannot locate current records and recommend they contact HR for further assistance."
+
+A prohibition tells the model what road is closed. It doesn't tell it where to drive. Give it the route.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>5. Define your business terms, abbreviations, and synonyms</b></p>
+
+Every organization has words that mean something specific and nowhere-else. Define them:
+
+- **Similar concepts**: "calendar year" vs. "fiscal year"
+- **Common business terms**: "quarter", "sales", "SKU", "shoes"
+- **Abbreviations**: "NPS" (Net Promoter Score), "MAU" (Monthly Active Users)
+
+Where you put the definition matters:
+
+- **Agent-level instructions** - definitions that apply across all sources and queries (what a "quarter" is).
+- **Data source instructions** - definitions specific to how a term is used in that dataset ("sales" meaning different things in different systems).
+
+If you've ever sat in a meeting where two departments argued for forty minutes before realizing they defined "active customer" differently, congratulations - you already know exactly which terms to write down.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>6. Use leading words to nudge query generation</b></p>
+
+You can embed fragments of SQL/DAX/KQL syntax in your data source instructions to steer the model toward the right query shape.
+
+- ❌ Find all the products with names containing "bike".
+- ✅ Find all the products with names containing "bike" LIKE '%bike%'
+
+That `LIKE '%...%'` fragment tells the model a pattern-matching clause is expected. It's a small trick with an outsized effect on partial matches, filters, and joins.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>7. Write clear, focused instructions - and cut the rest</b></p>
+
+More words is not more guidance. Here's the anti-pattern:
+
+```md
+You are an HR data agent who should try to help employees with all kinds of questions
+about work. You have access to many systems, like the HRIS platform, old payroll
+databases from previous vendors, archived employee files, scanned PDF policy documents,
+and maybe even some spreadsheets that HR used in the past. If someone asks about their
+pay, you might want to look in one of the old systems if needed. Also, sometimes data
+isn't updated immediately, so just do your best. Remember that the company reorganized
+in 2017, so department names might be different before then...
+```
+
+Scope too broad. References unreliable sources. No prioritization. Unnecessary history. And "just do your best" - which is not an instruction, it's a shrug.
+
+Compare:
+
+```md
+You are an HR Assistant Agent responsible for answering employee questions about
+employment status, job details, pay history, and leave balances.
+Use the official HR data warehouse to retrieve current and accurate records.
+If data is missing or unclear, inform the user and recommend they contact HR for
+further support.
+Keep responses concise, professional, and easy for employees to understand.
+```
+
+Clear scope. Correct source. Defined fallback behavior. Established tone. Table-level specifics left to the data source instructions, where they belong.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>8. Write detailed agent instructions</b></p>
+
+Agent instructions define how the agent interprets questions, picks sources, and formats responses. Structure them. A pattern that works:
+
+```md
+## Tone and style
+Use clear, simple, and professional language.
+Sound friendly and helpful, like an internal HR support agent.
+Avoid technical jargon unless it's part of the business terminology used in the data.
+
+## General knowledge
+You are an HR Assistant Agent designed to help employees access accurate information
+about their employment, benefits, and pay.
+Only answer questions using the official HR data sources provided.
+If multiple records exist, prioritize the most recent and most official source.
+Do not guess or assume answers - if information is missing or unclear, advise the
+employee to contact HR directly.
+
+## Data source descriptions
+- **Employee Data Warehouse**: Employment records including status, role, start date, department.
+- **Payroll System**: Pay history, compensation details, tax withholding.
+- **Benefits Enrollment Database**: Health insurance, retirement plans, other benefits.
+- **HR Policy Lakehouse**: Official company policies, holidays, leave, onboarding.
+
+## When asked about
+- **Employment status**: Use the *Employee Data Warehouse*
+- **Pay history or compensation**: Use the *Payroll System*
+- **Benefits and enrollment details**: Use the *Benefits Enrollment Database*
+- **Company holidays and leave policies**: Use the *HR Policy Lakehouse*
+```
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>The test to apply</b></p>
+
+Ask yourself: *would someone unfamiliar with these data sources be able to understand which sources to use and how to use them, based only on these instructions?* If no, you're missing context - and the model is missing the same context.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>9. Write detailed data source instructions</b></p>
+
+Agent instructions say *which* source. Data source instructions say *how* to query it. Cover:
+
+- The purpose of the source
+- The types of questions it's meant to answer
+- Required columns to include in responses
+- Join logic between tables
+- Typical value formats
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>The one people never think of</b></p>
+
+**The data agent cannot see individual row values before it executes a query.** It's writing the filter blind. So tell it the formats - does your `State` column hold `"CA"` or `"California"`? Does `EmploymentStatus` hold `"Active"` or `"A"` or `"1"`? Every unexplained encoding is a filter the agent will guess at and get wrong.
+
+```md
+## General instructions
+Use the EmployeeData data warehouse to answer questions related to employee details,
+employment status, pay history, and organizational structure.
+
+When generating queries:
+* Use EmployeeDim as the primary table for employee details.
+* Always include the following columns in the response (if available):
+  - EmployeeID
+  - EmployeeName
+  - EmploymentStatus
+  - JobTitle
+  - DepartmentName
+* Join other tables to EmployeeDim using EmployeeID unless otherwise specified.
+* Filter for the most recent records when applicable.
+
+Example values:
+- EmploymentStatus: "Active", "On Leave", "Terminated"
+- DepartmentName: "Finance", "HR", "Engineering"
+- State: Use U.S. state abbreviations like "CA", "NY", "TX"
+
+## When asked about
+When asked about **employee status**, use the `EmployeeStatusFact` table.
+Join it to `EmployeeDim` on `EmployeeID`.
+Filter by the most recent `StatusEffectiveDate` and return `EmploymentStatus`,
+`StatusEffectiveDate`, `EmployeeName`, and `DepartmentName`.
+
+When asked about **current job title or department**, use the `EmployeeDim` table.
+Return `JobTitle` and `DepartmentName`.
+If multiple records exist, filter for the record where `IsCurrent = True`.
+```
+
+The test here: *imagine a new team member using this dataset for the first time - could they write a correct query from these instructions alone?* If not, add the context.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>10. Use example queries for complex logic</b></p>
+
+Example queries are templates the agent generalizes from. Use them when the logic is genuinely hard - filtering, joins, aggregations, date handling.
+
+- Include examples for common or representative question types.
+- Keep the structure clear and use correct syntax for the source (SQL, DAX, or KQL).
+- You do **not** need to match user questions verbatim. Examples demonstrate *intent and structure*.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>How example queries actually get used - and why it matters</b></p>
+
+For each user question, the data agent runs a **vector similarity search** and retrieves the **top 3 most relevant example queries**, which go into the augmented prompt guiding query generation.
+
+Read that again, because it has real design consequences:
+
+- Only **three** examples make it into any given prompt. Quantity isn't the win - *coverage* is. Twenty near-identical examples of the same pattern means you burn all three slots on one idea.
+- Retrieval is by **semantic similarity to the question**. So the `question` text on each example matters as much as the query. Phrase it the way your users actually phrase things.
+- Spread your examples across genuinely different query *shapes* so that whatever gets asked, the three that surface are useful.
+
+And as the docs put it: a well-formed query is often clearer and more efficient than trying to explain complex logic in prose. When you catch yourself writing a paragraph describing a join, just write the join.
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Audit your agent against the ten practices</b></p>
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
+
+- Open the following link in another tab and follow the instructions: <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configuration-best-practices">Best practices for configuring your data agent</a>
+- Also review <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configurations">Data agent configurations</a> so you know exactly where each instruction type lives.
+- Count the tables in each of your data sources. If any source is over **25**, prune it and re-test.
+- Read your agent instructions as though you'd never seen the data. Can you tell which source answers which question? Fix what you can't.
+- Find every column with an encoded or abbreviated value and document the actual formats in your data source instructions.
+- List your example queries and group them by query *shape*. If three or more do the same thing, consolidate and add coverage for a shape you're missing.
+- Rephrase each example query's `question` field the way a real business user would say it out loud.
+- Now run the <a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate a Fabric data agent</a> process against a set of known-answer questions and record your baseline. Make your changes, re-run, and compare. Don't guess whether you improved it - measure.
+- Commit all of it to Git per section 7.7, so the tuning you just did is versioned and reviewable.
+
+> If you only reviewed the documentation in this Activity, ensure you bookmark each of these references and then perform the Activity in full once you do have your deployment.
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+<h2 id="7-9"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">Choosing Between Them</h2>
 
 Five doors, one agent. Here's the short version to steal for your own architecture review:
 
@@ -740,6 +957,9 @@ And the thing that's true of all of them: publish the agent, write a genuinely g
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/owl.png"><b>For Further Study</b></p>
 <ul>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent">What is the Fabric data agent?</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configuration-best-practices">Best practices for configuring your data agent</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configurations">Data agent configurations</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate a Fabric data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-tenant-settings">Fabric data agent tenant settings</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing">Fabric data agent sharing and permission management</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-foundry">Consume a data agent in Microsoft Foundry (preview)</a></li>
@@ -761,4 +981,4 @@ And the thing that's true of all of them: publish the agent, write a genuinely g
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-Congratulations! You have completed this Module. Your data agent is no longer something that lives in a portal - it's an endpoint your organization can reach from wherever they already work, with Entra ID keeping the governance intact at every door. You now have the tools, assets, and processes you need to extrapolate this information into other applications.
+Congratulations! You have completed this Module. Your data agent is no longer something that lives in a portal - it's an endpoint your organization can reach from wherever they already work, with Entra ID keeping the governance intact at every door, source control keeping it honest, and a configuration good enough to deserve the reach. You now have the tools, assets, and processes you need to extrapolate this information into other applications.
