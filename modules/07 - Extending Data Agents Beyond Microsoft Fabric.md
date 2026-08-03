@@ -8,7 +8,7 @@
 
 <img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/textbubble.png"> <h2> 07 - Extending Data Agents Beyond Microsoft Fabric </h2>
 
-In this module you'll cover taking the Fabric data agent you built in the previous modules and putting it in front of the people who actually need it - in Microsoft Foundry, in Copilot Studio and Teams, in your own Python applications, in Microsoft 365 Copilot, and through the open Model Context Protocol - and how Microsoft Entra ID keeps the security model intact the whole way.
+In this module you'll cover taking the Fabric data agent you built in the previous modules and putting it in front of the people who actually need it - in Microsoft Foundry, in Copilot Studio and Teams, in your own Python applications, in Microsoft 365 Copilot, and through the open Model Context Protocol - and how Microsoft Entra ID keeps the security model intact the whole way. You'll finish by putting the whole thing under source control so it can be promoted like any other production asset.
 
 In each module you'll get more references, which you should follow up on to learn more. Also watch for links within the text - click on each one to explore that topic.
 
@@ -28,6 +28,7 @@ You'll cover these topics in this Module on Extending Data Agents Beyond Microso
   <dt><a href="#7-4">7.4 - Connecting to Data Agents via Microsoft 365</a></dt>
   <dt><a href="#7-5">7.5 - Data Agents &amp; Security - How Entra ID Holds the Line</a></dt>
   <dt><a href="#7-6">7.6 - Data Agent as a Model Context Protocol (MCP) Server</a></dt>
+  <dt><a href="#7-7">7.7 - Source Control, CI/CD, and ALM for Data Agents</a></dt>
 
 </dl>
 
@@ -566,7 +567,160 @@ When you consume a data agent as an MCP server, responses may be sent outside Fa
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="7-7"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">Choosing Between Them</h2>
+<h2 id="7-7"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">7.7 - Source Control, CI/CD, and ALM for Data Agents</h2>
+
+Here's a question that separates a demo from a production system: **where does your data agent's configuration actually live?**
+
+If the honest answer is "in the Fabric portal, in the workspace, where Dave configured it," then you don't have a data agent. You have a very expensive tribal knowledge artifact with a single point of failure named Dave. Someone edits the AI instructions on a Thursday, the answers get worse on Friday, and there is no way to see what changed or roll it back.
+
+The fix is the same fix it's always been for everything else in your platform: put it in source control and promote it through environments. Fabric supports both, and it does it in a way that will feel completely familiar to anyone who's ever managed a codebase. Source control for Fabric data agents is currently in **preview**.
+
+You have two complementary tools:
+
+- **Git integration** - sync an entire workspace with a Git repository (Azure DevOps or GitHub) for version control, branch-based collaboration, and history.
+- **Deployment pipelines** - promote content between separate workspaces representing development, test, and production.
+
+Together those give you end-to-end ALM. Use both.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Git integration</b></p>
+
+You connect a workspace to a Git repo from **Workspace settings**. Once connected, your workspace items - data agents included - show up in the **Source control** pane, and the status bar at the bottom left shows the connected branch, last sync time, and Git commit ID.
+
+The Git folder structure mirrors the workspace structure, with each data agent in its own folder. That means you get diffs, history, reverts, and pull requests on your data agent, exactly like any other artifact.
+
+Recent enhancements worth knowing: Fabric now supports **selective branching**, so you can switch the connected branch at the workspace level to line up with feature branch workflows, and the Source control pane has a built-in **diff experience** so you can see exactly what changed before you commit or pull.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>What counts as a change</b></p>
+
+Once the workspace is Git-connected, the data agent flips to **Uncommitted changes** when you:
+
+- Change the schema selection
+- Update AI instructions or data source instructions
+- Edit example queries
+- Publish the data agent, or update its publishing description
+
+Note that last one. **Editing the publishing description is a tracked change.** Given how much this module has hammered on writing a good description - it drives the Copilot Studio picker, the M365 `description_for_model`, and the MCP tool description - it's genuinely good news that description edits are versioned like code. When somebody "improves" the description and your agent stops getting invoked, you can diff it.
+
+The flow goes both directions. Change something in Fabric, and it appears under the **Changes** tab to review and commit. Change something in the repo and push it, and Fabric shows an **Updates available** notification with the item under the **Updates** tab, where you review and accept.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>What the files actually look like</b></p>
+
+This is the part worth understanding properly, because once you can read these files you can review a data agent change in a pull request without opening Fabric at all.
+
+At the root, data agent content lives under a **files** folder, which contains a **config** folder holding:
+
+```
+files/
+└── config/
+    ├── data_agent.json
+    ├── publish_info.json
+    ├── draft/
+    └── published/
+```
+
+- **publish_info.json** holds the publishing description. Edit this file to change the description that appears when the agent is published.
+- **draft/** holds the configuration for the draft version.
+- **published/** mirrors the draft structure but represents the published version.
+
+Inside **draft/** you get **stage_config.json** - which contains `aiInstructions`, your agent instructions - plus one folder per data source, named by type:
+
+| Data source | Folder prefix |
+| --- | --- |
+| Lakehouse | `lakehouse-tables-` |
+| Warehouse | `warehouse-tables-` |
+| Semantic model | `semantic-model-` |
+| KQL database | `kusto-` |
+| Ontology | `ontology-` |
+
+Each data source folder contains **datasource.json** and **fewshots.json**. (Semantic models don't support example queries, so those folders only get **datasource.json**.)
+
+**datasource.json** defines the source config:
+
+- `dataSourceInstructions` - the instructions for that specific source
+- `displayName` - the source name
+- `elements` - the schema map, a complete list of tables and columns
+
+Each table and column carries an `is_selected` property, and there's a wrinkle here you need to know: **column-level selection isn't currently supported.** If a table is selected, *all* of its columns are included regardless of what the column-level `is_selected` says. If the table is `false`, none of its columns are considered even if they're individually marked `true`. Don't spend an afternoon toggling column flags expecting them to do something.
+
+Types follow a simple convention: `"lakehouse_tables"` for the source, `"lakehouse_tables.table"` for a table, `"lakehouse_tables.column"` for a column.
+
+**fewshots.json** stores your example queries, each with an `id`, a `question` in natural language, and the `query` text (SQL or KQL depending on source type). Your carefully tuned few-shot examples are now reviewable text files. Put them through code review like anything else that determines whether the answer is right.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Do not edit the published folder</b></p>
+
+Make your changes in **draft/**. When you publish the agent, those changes flow into **published/**. Editing **published/** directly bypasses the controlled draft state, which is the entire point of having two folders. Treat it as generated output.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Deployment pipelines</b></p>
+
+Deployment pipelines move data agents between workspaces mapped to lifecycle stages:
+
+1. Build or update the agent in the **development** workspace.
+2. Promote to **test** for validation.
+3. Promote to **production** where end users consume it.
+
+Assign a workspace to each stage first. If you skip test or production, Fabric creates them for you, named after the development workspace with `[test]` or `[prod]` appended. To deploy, open the stage you're deploying from, select the items, and select **Deploy**. You can review a deployment plan before applying so only intended updates get promoted. Source and target workspaces must be **in the same tenant**.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Publishing and the dev/prod boundary</b></p>
+
+This is the single most important operational rule in this section, and it trips up teams who otherwise have great ALM discipline.
+
+**An unpublished data agent is not consumable - even in the production workspace.** Every channel in this module (Power BI Copilot, Copilot Studio, Foundry, M365, MCP) requires a published agent. Sitting in prod is not enough.
+
+Which creates an obvious tension: you also need to publish in *development* to evaluate performance across those same channels. Both things are true, so handle it deliberately:
+
+- **Publishing from development should be restricted to authorized users** who are actively developing the agent and assessing it. Lock that workspace down so half-finished, experimental agents don't leak to a broad audience.
+- **End users should only ever consume agents published from production.** Stable, approved versions only.
+
+If you don't draw that line, someone's going to `@`-mention your Tuesday afternoon experiment in a Teams channel full of executives.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Automating it</b></p>
+
+If Fabric's built-in deployment pipelines aren't enough - or you want data agent promotion sitting in the same pipeline as everything else you ship - the <a href="https://marketplace.visualstudio.com/items?itemName=ms-fabric.fabric-devops-pipelines">Azure DevOps Pipelines extension for Fabric</a> provides native tasks that run <a href="https://go.microsoft.com/fwlink/?linkid=2313665">Fabric CLI</a> commands in pipeline jobs. Install the extension from the Marketplace, set up a service connection in your Azure DevOps project, and add Fabric CLI tasks to your pipeline definition. You can use this alongside Fabric deployment pipelines or instead of them.
+
+For large-scale synchronization, the **Import/Export Item Definitions Batch APIs** (preview) let you export and import data agent definitions in bulk to streamline promotion across environments. See the <a href="https://learn.microsoft.com/en-us/rest/api/fabric/">Fabric REST API documentation</a>.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>One preview wrinkle to verify yourself</b></p>
+
+The ALM documentation states that service principals are supported in the Fabric data agent **only** as part of ALM scenarios - Git integration and deployment pipelines - and not for other data agent features. Meanwhile the service principal documentation covered back in section 7.5 walks you through using an SPN to call a published agent with a bearer token.
+
+Both pages are current, both features are in preview, and preview surface areas move fast. Before you architect an unattended solution around SPN *querying*, validate it in your own tenant and check both docs for updates. This is exactly the kind of thing that changes between when a workshop is written and when you deliver it - and now you know to look.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Best practices</b></p>
+
+Straight from the field, and none of these will surprise you:
+
+- Use a **dedicated branch** for data agent development and merge to main after code review.
+- Keep related resources - data sources, data agents, notebooks, pipelines - **in the same workspace** so they promote together.
+- **Test in the test workspace** before promoting to production.
+- Write **descriptive commit messages**. "updated instructions" tells future-you nothing.
+- **Never edit the published folder directly.**
+- Use **environment-agnostic configuration** - connection references via Variable Library where supported - instead of hardcoding environment-specific values into data source configs. This is what makes branch merges and dev→test→prod deployments stop hurting.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Limitations and considerations</b></p>
+
+- Only workspaces **connected to a Git repository** can use Git-based ALM features.
+- Service principals in data agents are supported **only for ALM scenarios** (see the wrinkle above).
+- Deployment pipelines require source and target workspaces **in the same tenant**.
+- Large numbers of frequent commits can impact repository size and performance.
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Put your data agent under source control and promote it</b></p>
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
+
+- Open the following link in another tab and follow the instructions: <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-source-control">Source Control, CI/CD, and ALM for Fabric data agent</a>
+- Review <a href="https://learn.microsoft.com/en-us/fabric/cicd/git-integration/git-get-started?tabs=azure-devops,Azure,commit-to-git">Get started with Git integration</a> and connect your workspace to Azure DevOps or GitHub.
+- Commit your data agent. Then go read the files in the repo - open **stage_config.json**, a **datasource.json**, and a **fewshots.json**. Make sure you can find your AI instructions and your example queries in there.
+- Make a change *in Fabric* - add an example query - and review the diff in the **Source control** pane before committing.
+- Now make a change *in the repo* - edit `dataSourceInstructions` in a text editor - push it, and accept the update in Fabric. Confirm the agent's behavior actually changed.
+- Review <a href="https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/get-started-with-deployment-pipelines?tabs=from-fabric,new-ui">Get started with deployment pipelines</a>, then build a dev → test → prod pipeline and promote your agent.
+- Publish from **production** and confirm it's consumable through one of the channels from sections 7.1 - 7.6. Then confirm an unpublished agent in prod is *not*.
+- Stretch goal: install the <a href="https://marketplace.visualstudio.com/items?itemName=ms-fabric.fabric-devops-pipelines">Azure DevOps Pipelines extension for Fabric</a> and automate the promotion with Fabric CLI tasks.
+
+> If you only reviewed the documentation in this Activity, ensure you bookmark each of these references and then perform the Activity in full once you do have your deployment.
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+<h2 id="7-8"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">Choosing Between Them</h2>
 
 Five doors, one agent. Here's the short version to steal for your own architecture review:
 
@@ -579,7 +733,7 @@ Five doors, one agent. Here's the short version to steal for your own architectu
 | Any MCP-speaking client, or a future-proof endpoint | **MCP server** | Must follow the MCP handshake; no dynamic client registration; client's data policy applies |
 | Unattended jobs, pipelines, background services | **Service principal** (with any of the above) | No managed identity support; not supported with KQL sources |
 
-And the thing that's true of all of them: publish the agent, write a genuinely good description, keep everyone on one tenant, get the tenant switches enabled, and let Entra ID carry the security. Do those five things and the rest is mostly clicking.
+And the thing that's true of all of them: publish the agent, write a genuinely good description, keep everyone on one tenant, get the tenant switches enabled, and let Entra ID carry the security. Do those five things and the rest is mostly clicking - and once it works, get it into Git so it stays working.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -598,6 +752,9 @@ And the thing that's true of all of them: publish the agent, write a genuinely g
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-purview-governance">Audit data agent interactions with Microsoft Purview</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-service-principal">Service principal support for Fabric data agents</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-source-control">Source control, CI/CD, and ALM for Fabric data agents</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/cicd/git-integration/intro-to-git-integration">What is Microsoft Fabric Git integration?</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/get-started-with-deployment-pipelines">Get started with deployment pipelines</a></li>
+  <li><a href="https://marketplace.visualstudio.com/items?itemName=ms-fabric.fabric-devops-pipelines">Azure DevOps Pipelines extension for Fabric</a></li>
   <li><a href="https://www.youtube.com/@Tales-from-the-Field">Tales from the Field on YouTube</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/fundamentals/whats-new">As always, this is a fast-changing technology, so ensure you check this reference to find the latest improvements.</a></li>
 </ul>
