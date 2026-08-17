@@ -106,6 +106,8 @@ Examples of entity types might include:
 
 Ontology creates a shared business vocabulary used by people, applications, and AI agents. By defining business concepts once, organizations can ensure consistent interpretation across reports, agents, and operational systems. 
 
+![Ontology data binding canvas](https://learn.microsoft.com/en-us/fabric/iq/ontology/media/how-to-bind-data/bind-data-canvas.png)
+
 ### Example Questions
 
 - Which customers are impacted by delayed shipments?
@@ -127,6 +129,8 @@ Graph enables:
 - Multi-hop exploration
 
 Graph works closely with Ontology by visualizing and traversing business relationships defined within the ontology. 
+
+![Graph nodes and edge](https://learn.microsoft.com/en-us/fabric/graph/media/quickstart/nodes-edge.png)
 
 ### Example Questions
 
@@ -152,6 +156,8 @@ Data Agents can work with:
 
 They provide conversational analytics without requiring users to write SQL, DAX, or KQL. 
 
+![Create a Fabric data agent](https://learn.microsoft.com/en-us/fabric/data-science/media/how-to-create-data-agent/create-data-agent.png)
+
 ### Example Questions
 
 - What were the top selling products this month?
@@ -172,6 +178,26 @@ Operations Agents continuously monitor operational and real-time data to:
 - Trigger governed responses
 
 Unlike Data Agents, which respond to user questions, Operations Agents continuously evaluate business and operational conditions. 
+
+### Configure an Operations Agent
+
+Use the [Microsoft Fabric operations agent configuration guide](https://learn.microsoft.com/en-us/fabric/real-time-intelligence/operations-agent#configure-an-operations-agent) to set up the agent:
+
+1. **Instructions** - Define the agent's goals and provide instructions that describe how it should monitor and respond to operational conditions.
+
+	![Instructions section on the operations agent setup page](https://learn.microsoft.com/en-us/fabric/real-time-intelligence/media/operations-agent/agent-instruction.png)
+
+2. **Knowledge sources** - Select the data or knowledge sources that provide the operational context the agent needs.
+
+	![Knowledge source section on the operations agent setup page](https://learn.microsoft.com/en-us/fabric/real-time-intelligence/media/operations-agent/knowledge-source.png)
+
+3. **Properties** - Review the available properties and confirm that each property maps to the correct column in the underlying data.
+
+	![Operations agent playbook and its properties](https://learn.microsoft.com/en-us/fabric/real-time-intelligence/media/operations-agent/properties.png)
+
+4. **Rules and conditions** - Define and verify the conditions the agent evaluates against the selected properties.
+
+5. **Generate the playbook** - Save the agent, then generate its playbook. The playbook summarizes the agent's goals, instructions, data, actions, monitored concepts, and evaluation rules.
 
 ### Example Scenarios
 
@@ -195,6 +221,8 @@ Plan enables organizations to:
 - Align planning with governed data
 
 By leveraging existing semantic models, Plan ensures planning activities use the same trusted measures and dimensions used throughout the organization. 
+
+![Microsoft Fabric planning sheet](https://learn.microsoft.com/en-us/fabric/iq/plan/media/planning-how-to-get-started/planning-sheet.png)
 
 ### Example Scenarios
 
@@ -250,6 +278,8 @@ Allows business teams to adjust forecasts and business assumptions based on curr
 Together these capabilities transform:
 
 **Data → Meaning → Relationships → Insights → Decisions → Actions** 
+
+![Fabric IQ cold-chain architecture](../graphics/fabric-iq-cold-chain-architecture.svg)
 
 ---
 
