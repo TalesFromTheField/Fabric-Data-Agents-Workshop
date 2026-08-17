@@ -34,7 +34,9 @@ Fabric IQ provides a shared business context layer that enables:
 - Intelligent agents
 - Operational decision making
 
-Fabric IQ elevates enterprise data into business language so people and AI agents can reason using business concepts instead of technical structures. 
+Fabric IQ elevates enterprise data into business language so people and AI agents can reason using business concepts instead of technical structures.
+
+![Fabric IQ Layers](https://learn.microsoft.com/en-us/fabric/iq/media/overview/fabric-iq-layers.png)
 
 ---
 
@@ -49,13 +51,17 @@ Fabric IQ consists of several complementary capabilities that work together:
 5. Operations Agent
 6. Plan
 
-These capabilities build upon a unified OneLake foundation and create a common business understanding across analytics, AI, and operations. 
+These capabilities build upon a unified OneLake foundation and create a common business understanding across analytics, AI, and operations.
+
+![Fabric IQ Layers](https://learn.microsoft.com/en-us/fabric/iq/media/overview/fabric-iq-layers.png) 
 
 ---
 
 # Power BI Semantic Model
 
 A Power BI Semantic Model provides a curated analytical layer for the business.
+
+![Power BI semantic model view showing connected tables and measures](https://learn.microsoft.com/en-us/power-bi/transform-model/media/service-edit-data-models/service-edit-data-models-27.png)
 
 It contains:
 
