@@ -309,4 +309,14 @@ The core components of Fabric IQ are:
 - Operations Agents
 - Plan
 
-The remaining modules will explore each of these capabilities in greater depth and demonstrate how they can be implemented to create enterprise-ready AI and data solutions. 
+The remaining modules will explore each of these capabilities in greater depth and demonstrate how they can be implemented to create enterprise-ready AI and data solutions.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/owl.png"><b>For Further Study</b></p>
+<ul>
+	<li><a href="https://learn.microsoft.com/en-us/fabric/iq/" target="_blank">Fabric IQ documentation</a></li>
+	<li><a href="https://community.fabric.microsoft.com/blog/fbc_fabricupdatesblogs/from-data-platform-to-intelligence-platform-introducing-microsoft-fabric-iq/5172484" target="_blank">From Data Platform to Intelligence Platform: Introducing Microsoft Fabric IQ</a></li>
+</ul>
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+Congratulations! You have completed this module on **Introduction and Overview: Fabric IQ**. You now understand the core capabilities of Fabric IQ and how they work together to transform enterprise data into business context, insights, decisions, and actions. When you're ready, <a href="02 - Fabric Data Agents.md" target="_blank">proceed to the next module</a>.
