@@ -119,7 +119,7 @@ This is a modular workshop, and in each section, you'll learn concepts, technolo
 
   <tr><td><a href="\modules\00 - Pre-Requisites.md" target="_blank">00 - Pre-Requisites </a></td><td> Pre-requisites check, environment setup, overview of the workshop</td></tr>
   <tr><td><a href="\modules\01 - Introduction and Overview.md" target="_blank">01 - Fabric IQ </a></td><td> <TODO: Insert Module 01 Quick Summary></td></tr>
-  <tr><td><a href="\modules\02 - Fabric Data Agents.md" target="_blank">02 - Fabric Data Agents</a></td><td> <TODO: Insert Module 02 Quick Summary></td></tr>
+  <tr><td><a href="\modules\02 - Fabric Data Agents.md" target="_blank">02 - Fabric Data Agents</a></td><td> What a Fabric data agent is and how it routes questions to NL2SQL, NL2DAX, and NL2KQL; prerequisites and Copilot tenant settings; creating an agent, adding data sources, and selecting tables; publishing a draft agent for consumers</td></tr>
   <tr><td><a href="\modules\03 - Fabric Data Agents - In Use.md" target="_blank">03 - Fabric Data Agents - In Use </a></td><td>  <TODO: Insert Module 03 Quick Summary> </td></tr>
   <tr><td><a href="\modules\04 - Data Modeling for AI and Ontologies.md" target="_blank">04 - Data Modeling for AI & Ontologies </a></td><td> <TODO: Insert Module 04 Quick Summary> </td></tr>  
   <tr><td><a href="\modules\05 - Fabric Graph and Fabric Ontologies.md" target="_blank">05 - Fabric Graph & Fabric Ontologies</a></td><td> <TODO: Insert Module 05 Quick Summary> </td></tr>  

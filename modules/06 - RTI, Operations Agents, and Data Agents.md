@@ -226,7 +226,7 @@ A Data Agent has real capacity and tenant requirements, and it will fail *quietl
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-- [ ] **TODO (maintainer):** Author "Ask Your Stream" — build a Data Agent on the KQL database created in section 6.1, ask natural-language questions about the live events, and inspect the generated KQL. Reference material to build from:
+- [ ] Author "Ask Your Stream" — build a Data Agent on the KQL database created in section 6.1, ask natural-language questions about the live events, and inspect the generated KQL. Reference material to build from:
     - [Create a Fabric data agent](https://learn.microsoft.com/en-us/fabric/data-science/how-to-create-data-agent) (how-to)
     - [Add and configure data sources in a Fabric data agent](https://learn.microsoft.com/en-us/fabric/data-science/data-agent-add-datasources) (confirms KQL database as a source)
     - [Fabric data agent concepts](https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent) (NL2KQL over Eventhouse, governance, prerequisites)
