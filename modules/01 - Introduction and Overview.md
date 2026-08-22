@@ -274,7 +274,3 @@ The core components of Fabric IQ are:
 - Plan
 
 The remaining modules will explore each of these capabilities in greater depth and demonstrate how they can be implemented to create enterprise-ready AI and data solutions. 
-
----
-
-Congratulations! You have completed this Module. If you understand the concepts here, you can [proceed to the next Module](02%20-%20Fabric%20Data%20Agents.md), where you'll build and publish your first Fabric Data Agent.
