@@ -79,10 +79,17 @@ The solution includes the following technologies - although you are not limited 
 
 Microsoft Fabric is a Software as a Service (SaaS) platform, so every activity in this workshop is performed in a web browser. You do not need to install a local server or provision a virtual machine.
 
-- You must have a Microsoft 365 account with the permissions needed to create assets.
-- You must have a Power BI license, and either a Microsoft Fabric capacity or an active Microsoft Fabric trial capacity.
-- Your tenant must have Microsoft Fabric enabled, and the Copilot and data agent tenant settings turned on.
-- You will need a computer with an internet browser and a working internet connection to work through the examples, access the workshop materials, and take notes.
+**Two requirements block everything else in this workshop. Confirm both before class starts:**
+
+- **A Microsoft Fabric capacity.** This can be a provisioned Fabric capacity (an F SKU purchased through Azure) or an active [Microsoft Fabric trial capacity](https://learn.microsoft.com/en-us/fabric/fundamentals/fabric-trial). Your tenant must also have [Fabric enabled](https://learn.microsoft.com/en-us/fabric/admin/fabric-switch) by an administrator. Without a capacity you cannot create the Lakehouse, Eventhouse, or data agent items used throughout the workshop.
+- **An empty Fabric workspace assigned to that capacity.** [Create a new workspace](https://learn.microsoft.com/en-us/fabric/fundamentals/create-workspaces) and, under **Workspace settings > License info**, confirm its license mode points at your Fabric capacity or trial capacity - a workspace on a Pro or Personal license mode will not work. Start from an empty workspace so the items you build during the workshop stay isolated from anything else in your tenant, and so you can delete the whole workspace afterward to stop incurring charges.
+
+The remaining prerequisites are:
+
+- A Microsoft 365 account with the permissions needed to create assets.
+- A Power BI license.
+- The Copilot and data agent tenant settings enabled, so that data agents can be created and used in your tenant.
+- A computer with an internet browser and a working internet connection, to work through the examples, access the workshop materials, and take notes.
 - Optionally, a Microsoft Azure account with the ability to create assets, if you plan to provision a Fabric capacity rather than use a trial.
 
 This workshop expects that you understand relational data and data modeling, working with large data sets, data security and permissions, and basic analytics and reporting concepts. Reading familiarity with SQL, DAX, or KQL is helpful, but you will not be asked to write them from scratch.
@@ -90,6 +97,7 @@ This workshop expects that you understand relational data and data modeling, wor
 If you are new to these, here are a few references you can complete prior to class:
 
 -  [Get started with Microsoft Fabric](https://learn.microsoft.com/en-us/training/paths/get-started-fabric/)
+-  [Microsoft Fabric licenses and capacity](https://learn.microsoft.com/en-us/fabric/enterprise/licenses)
 -  [OneLake, the OneDrive for data](https://learn.microsoft.com/en-us/fabric/onelake/onelake-overview)
 -  [Semantic models in Power BI](https://learn.microsoft.com/en-us/power-bi/connect-data/service-datasets-understand)
 -  [Security in Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/security/security-overview)
@@ -99,7 +107,7 @@ If you are new to these, here are a few references you can complete prior to cla
 
 <img style="float: left; margin: 0px 15px 15px 0px;" src="https://raw.githubusercontent.com/microsoft/sqlworkshops/master/graphics/bulletlist.png"> <h3>Setup</h3>
 
-<a href="modules/00%20-%20Pre-Requisites.md" >A full pre-requisites document is located here</a>. These instructions should be completed before the workshop starts, since you will not have time to cover these in class. <i>If you provision a Microsoft Fabric capacity in Azure rather than using a trial, remember to pause it from the Azure Portal when you are not taking the class so that you do not incur charges.</i>
+<a href="modules/00%20-%20Pre-Requisites.md" >A full pre-requisites document is located here</a>. These instructions should be completed before the workshop starts, since you will not have time to cover these in class - that includes standing up your Fabric capacity and creating the empty workspace attached to it. <i>If you provision a Microsoft Fabric capacity in Azure rather than using a trial, remember to pause it from the Azure Portal when you are not taking the class so that you do not incur charges.</i>
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -134,7 +142,7 @@ This is a modular workshop, and in each section, you'll learn concepts, technolo
 
   <tr><td style="background-color: AliceBlue; color: black;"><b>Module</b></td><td style="background-color: AliceBlue; color: black;"><b>Topics</b></td></tr>
 
-  <tr><td><a href="modules/00%20-%20Pre-Requisites.md" >00 - Pre-Requisites </a></td><td> Microsoft 365, Power BI, and Microsoft Fabric capacity requirements; the administrator roles you need; and validating that you have a Fabric-enabled workspace before class begins.</td></tr>
+  <tr><td><a href="modules/00%20-%20Pre-Requisites.md" >00 - Pre-Requisites </a></td><td> Microsoft 365 and Power BI licensing; provisioning a Microsoft Fabric capacity or trial capacity; the administrator roles you need; and creating and validating an empty Fabric workspace assigned to that capacity before class begins.</td></tr>
 
   <tr><td style="background-color: AliceBlue; color: black;"><a href="modules/01%20-%20Introduction%20and%20Overview.md" >01 - Introduction and Overview: Fabric IQ</a></td><td style="background-color: AliceBlue; color: black;"> Why business context matters for AI, and how the Fabric IQ components - Power BI semantic models, ontologies, graph, data agents, operations agents, and Plan - combine to move an organization from data to meaning, insights, decisions, and actions.</td></tr>
 
