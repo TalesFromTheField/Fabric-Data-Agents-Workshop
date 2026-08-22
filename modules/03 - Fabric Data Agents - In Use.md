@@ -489,3 +489,379 @@ TODO: Enter activity description with checkbox
 TODO: Enter activity steps description with checkbox
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
+
+<h2 id="3.4"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">3.4 Data Agents with Multiple Data Sources</h2>
+
+In Module 02 you learned that a data agent supports up to five data sources in any combination. The moment you attach the second one, a new failure mode appears: the agent has to decide *which source* should answer each question. That decision is called [data source routing](https://learn.microsoft.com/en-us/fabric/data-science/data-agent-routing), and when it goes wrong you get incorrect, incomplete, or empty answers.
+
+If your agent has a single data source, you can skip this section - routing only matters with more than one.
+
+### How routing works
+
+Every data agent has an **orchestrator** that selects tools and data sources. When a question arrives, it:
+
+1. Builds a plan for answering the question.
+2. Picks the data source most likely to contain the answer, based on each source's metadata - **name, description, selected schema, and example queries**.
+3. Calls that source's query-generation tool and reviews the results.
+4. Repeats with another source or another step if more information is needed.
+
+Read step 2 again, because it's the whole section in one line. Those four pieces of metadata are the *only* things the orchestrator has to work with - so they're also the only four levers you have.
+
+For speed, the orchestrator routes from a **subset** of each source's metadata. When that subset isn't enough - the schema is large, source names are similar, or the question is ambiguous - it can call a **routing tool** to inspect the full schema and example queries before committing to a source.
+
+### Signs your routing needs work
+
+- The agent picks the wrong source for a question you expect a specific source to answer.
+- The agent says it can't find an answer when the data exists in one of the connected sources.
+- The agent gives **different answers to similar questions**, because it picks a different source each time.
+
+That third symptom is the diagnostic one. Inconsistency across near-identical questions is almost always routing, not query generation.
+
+### Inspect routing decisions in run steps
+
+After the agent answers, expand the run steps to see which source it routed to and what context drove the decision. If the orchestrator called the routing tool, that appears as its own step, showing the metadata it reviewed - descriptions, schema, and example queries - before committing.
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-routing/data-agent-routing.png" height="400"></p>
+
+A routing tool call is itself a signal: the orchestrator couldn't decide from the metadata subset and had to go look. Frequent routing tool calls tell you your source metadata is too thin or too similar.
+
+### Improve routing, in this order
+
+Work through these in sequence. Each step adds more signal for the orchestrator, and each is cheaper and more durable than the one after it.
+
+**1. Tighten your schema selection.** The tables, views, and columns you select on each source are a primary signal of what that source covers. Select only the entities the agent should consider, and make sure object names are descriptive. Large or noisy selections make it harder for the orchestrator to tell what each source is *for*.
+
+**2. Add a data source description.** A description tells the orchestrator at a glance what the source contains and when to use it. Keep it short and focused on the topics or entities the source covers:
+
+> *"Sales fact data for North America retail, including transactions, returns, and store metadata."*
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/how-to-create-data-agent/configuration-data-source-description.png" height="400"></p>
+
+A good description summarizes what the source contains, the types of questions it can answer, and any business-specific nuances that distinguish it from your other sources. That last part carries the most weight when two sources overlap.
+
+**3. Add example queries.** Beyond improving query generation (section 3.2), examples show the orchestrator what kinds of questions a source is *meant* to answer. Add representative questions for each source - especially questions that previously routed to the wrong place. Note the constraint from section 3.2: semantic models and ontologies don't support example queries, so for those sources steps 1 and 2 have to carry the load.
+
+**4. Add routing rules to agent instructions.** Only if a question still routes wrongly after the first three steps. Declare explicit rules, grouped by topic:
+
+```md
+## Topics
+
+- When asked about logistics trends, shipment delays, or carrier performance, use **FabrikamLogisticsLH**.
+- When asked about marketing campaigns, ad spend, or channel performance, use **FabrikamMarketingDW**.
+- When asked about customer support tickets or SLA breaches, use **FabrikamSupportKQL**.
+```
+
+This is deliberately last. Explicit rules are maintenance debt: keep them concise, because long lists crowd out your other instructions, and you have to update them every time you add or rename a data source. A good description (step 2) keeps working when the questions change; a hardcoded rule doesn't.
+
+<br>
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: TODO: Activity Name</b></p>
+
+TODO: Activity Description and tasks
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
+
+TODO: Enter activity description with checkbox
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
+
+TODO: Enter activity steps description with checkbox
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+<h2 id="3.5"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">3.5 Data Agents and Security</h2>
+
+Security for a data agent splits into two independent questions, and confusing them is the source of most access problems you'll hit:
+
+1. **Who can reach the agent** - controlled by data agent sharing permissions.
+2. **What data they can see through it** - controlled by permissions on the underlying data sources.
+
+Sharing an agent does *not* grant access to data. As you saw in Module 02, the agent runs as the person asking and never elevates anyone's access, so when you share an agent you must **also** ensure recipients have access to the underlying data it uses. The agent honors all user permissions on that data, including **Row-Level Security (RLS)** and **Column-Level Security (CLS)**.
+
+That's why two colleagues can ask the same published agent the same question and legitimately get different answers.
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-sharing/sharing-main.png" height="400"></p>
+
+### The three permission tiers
+
+[Fabric data agent sharing](https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing) gives you three levels of access to the agent itself:
+
+<table style="tr:nth-child(even) {background-color: #f2f2f2;}; text-align: left; display: table; border-collapse: collapse; border-spacing: 2px; border-color: gray;">
+
+  <tr><th style="background-color: #1b20a1; color: white;">Permission</th> <th style="background-color: #1b20a1; color: white;">What the user can do</th> <th style="background-color: #1b20a1; color: white;">Use it for</th></tr>
+
+  <tr><td><b>No permission selected</b> (default)</td><td>Query the <b>published</b> version only. No access to edit, or even view, any configuration or details.</td><td>Everyday consumers. This is the tier that protects the integrity of your setup.</td></tr>
+  <tr><td><b>View details</b></td><td>View the details and configurations of both the published and draft versions, and query the agent - but change nothing.</td><td>Reviewers, auditors, and analysts who need to understand how an answer was produced.</td></tr>
+  <tr><td><b>Edit and view details</b></td><td>Full access to view and edit all details and configurations of both published and draft versions, plus query the agent.</td><td>Co-builders. Ideal for collaborative work.</td></tr>
+
+</table>
+
+<br>
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-sharing/permission-models.png" height="400"></p>
+
+### Sharing before you publish
+
+You can share an agent that hasn't been published yet, but the behavior surprises people:
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-sharing/share-without-publish.png" height="400"></p>
+
+Users with **default permissions can't query it at all** - the default tier only allows querying the *published* version, and there isn't one yet. Users with **View details** or **Edit and view details** can access only the draft version. If a colleague reports that a freshly shared agent does nothing for them, check whether it has ever been published before you go looking for a permissions bug.
+
+### Minimum permissions on the underlying sources
+
+For a user to successfully query through an agent, they need at least these effective permissions on each connected source. With anything less, queries fail or return empty results.
+
+<table style="tr:nth-child(even) {background-color: #f2f2f2;}; text-align: left; display: table; border-collapse: collapse; border-spacing: 2px; border-color: gray;">
+
+  <tr><th style="background-color: #1b20a1; color: white;">Data source type</th> <th style="background-color: #1b20a1; color: white;">Minimum permission to query via data agent</th> <th style="background-color: #1b20a1; color: white;">Notes</th></tr>
+
+  <tr><td>Power BI semantic model</td><td>Read</td><td>Read is sufficient to query a semantic model via a data agent. Build/Write is only required to modify the model or use capabilities such as Prep for AI. Workspace access isn't required.</td></tr>
+  <tr><td>Lakehouse</td><td>Read on the lakehouse item (and table access if enforced)</td><td>Write not required unless modifying data.</td></tr>
+  <tr><td>Warehouse</td><td>Read (SELECT on relevant tables)</td><td>Higher permissions only for DML/DDL operations.</td></tr>
+  <tr><td>KQL database</td><td>Reader role on the database</td><td>Higher roles only for management commands.</td></tr>
+  <tr><td>Ontology</td><td>Read on the ontology item, and Read on the underlying semantic model, lakehouse, or KQL database bound to the ontology</td><td></td></tr>
+  <tr><td>Microsoft Graph in Fabric</td><td>Read on the graph item and the underlying data</td><td></td></tr>
+  <tr><td>Other supported sources</td><td>Query/read-level access</td><td>Must allow metadata and data retrieval.</td></tr>
+
+</table>
+
+<br>
+
+> **Important:** Read permission on a semantic model is sufficient for queries initiated through a data agent - Build and workspace roles aren't required for these interactions. This applies **only** to data agent interactions. Other entry points, such as Analyze in Excel or direct report authorship, may still require Build.
+
+That exception is worth remembering, because it lets you follow least privilege properly: grant Read when users only need to *ask questions* through an agent, and grant Build or broader workspace roles only when they genuinely need to modify the model or use features such as Prep for AI.
+
+### The failure mode to recognize
+
+If a user can open the agent but lacks the minimum permission on one or more underlying sources, queries that touch those sources **fail with an authorization error or return empty results**, depending on that source's security model.
+
+The empty-result case is the dangerous one. An agent returning "no records found" looks identical whether the answer is genuinely zero, RLS filtered every row, or the user has no access at all. When a user reports missing data, check permissions before you start rewriting instructions.
+
+<p><a href="https://www.youtube.com/watch?v=1OOe9-EteL0" target="_blank"><img src="https://img.youtube.com/vi/1OOe9-EteL0/0.jpg" height="200"></a></p>
+
+<i>Microsoft Fabric: Data Security & Data Agents - Tales From The Field</i>
+
+<br>
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: TODO: Activity Name</b></p>
+
+TODO: Activity Description and tasks
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
+
+TODO: Enter activity description with checkbox
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
+
+TODO: Enter activity steps description with checkbox
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+<h2 id="3.6"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">3.6 Data Agents and CI/CD</h2>
+
+Everything you've tuned in this module - instructions, example queries, data source instructions, table selections - is *configuration*. Configuration that lives in exactly one workspace, with no history, no review, and no way back if someone breaks it, is a production risk.
+
+[Source control, CI/CD, and ALM for Fabric data agents](https://learn.microsoft.com/en-us/fabric/data-science/data-agent-source-control) solves that with two complementary capabilities:
+
+- **Git integration** - sync an entire workspace with a Git repository (Azure DevOps or GitHub) for version control, branch-based collaboration, and history tracking of individual items, including data agents.
+- **Deployment pipelines** - promote content between separate workspaces representing development, test, and production stages.
+
+> **Note:** Source control for Fabric data agents is currently in **preview**.
+
+### Git integration
+
+Git integration synchronizes a Fabric workspace with a Git repository, so you can use your existing development processes and tools directly in Fabric. It's configured at the **workspace** level from **Workspace settings**. Key capabilities:
+
+- Full backup and version control of workspace items.
+- The folder structure in Git mirrors the workspace structure.
+- Data agent configurations - schema selection, AI instructions, data source instructions, and example queries - are stored in structured files in dedicated folders.
+- View differences, review history, and revert to prior states.
+- Branch-based collaboration with feature branches and main.
+
+Recent enhancements add **selective branching**, letting you switch the connected branch at the workspace level to align with feature branch workflows, and a built-in **diff experience** in the Source control pane so you can review exactly what changed before committing or pulling.
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-cicd/data-agent-git-source-control.png" height="400"></p>
+
+Once connected, the status bar at the bottom left shows the connected branch, the time of the last sync, and the Git commit ID. Each data agent is stored in its own folder in the repository, so you can review changes, track version history, and use standard Git workflows such as pull requests to merge updates into main.
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-cicd/git-repo.png" height="400"></p>
+
+### What counts as a change
+
+In a Git-connected workspace, the agent's status changes to **Uncommitted changes** when you:
+
+- Change the schema selection.
+- Update AI instructions or data source instructions.
+- Edit example queries.
+- Publish the agent, or update its publishing description.
+
+Any change - functional or descriptive - puts the agent out of sync with the repository. Changed items appear under the **Changes** tab in the Source control pane, where you can review them, compare against the committed version, and commit.
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-cicd/source-control-data-agent.png" height="400"></p>
+
+The flow works in both directions. When updates are made directly in the repository - modifying AI instructions, changing example queries, editing publishing descriptions - Fabric detects them and shows an **Updates available** notification. The changed items appear under the **Updates** tab, where you review and accept them to apply the repository state to your workspace.
+
+### How a data agent is stored in Git
+
+Understanding this layout is what makes a data agent diff readable in a pull request. At the root, agent content lives under a **files** folder, which contains a **config** folder holding **data_agent.json**, **publish_info.json**, a **draft** folder, and a **published** folder.
+
+- **publish_info.json** contains the publishing description - the one from Module 02. You can edit this file to change the description that appears when the agent is published.
+- The **draft** folder holds the configuration of the draft version; the **published** folder holds the published version.
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-cicd/git-config-draft.png" height="400"></p>
+
+Inside the **draft** folder you'll find **stage_config.json**, which contains `aiInstructions` - your agent-level instructions from section 3.1 - plus one folder per data source, named by source type:
+
+<table style="tr:nth-child(even) {background-color: #f2f2f2;}; text-align: left; display: table; border-collapse: collapse; border-spacing: 2px; border-color: gray;">
+
+  <tr><th style="background-color: #1b20a1; color: white;">Data source</th> <th style="background-color: #1b20a1; color: white;">Folder name prefix</th></tr>
+
+  <tr><td>Lakehouse</td><td><code>lakehouse-tables-</code> followed by the lakehouse name</td></tr>
+  <tr><td>Warehouse</td><td><code>warehouse-tables-</code> followed by the warehouse name</td></tr>
+  <tr><td>Semantic model</td><td><code>semantic-model-</code> followed by the model name</td></tr>
+  <tr><td>KQL database</td><td><code>kusto-</code> followed by the KQL database name</td></tr>
+  <tr><td>Ontology</td><td><code>ontology-</code> followed by the ontology name</td></tr>
+
+</table>
+
+<br>
+
+Each data source folder contains **datasource.json** and **fewshots.json** - except semantic models, which don't support example queries and therefore have only **datasource.json**.
+
+**datasource.json** defines that source's configuration:
+
+- `dataSourceInstructions` - the instructions you wrote in section 3.3.
+- `displayName` - the name of the data source.
+- `elements` - the schema map, listing every table and column in the source.
+
+Each table carries an `is_selected` property: `true` means the agent can use it, `false` means it can't. Column entries also show `is_selected`, but **column-level selection isn't currently supported** - if a table is selected, all of its columns are included regardless of the column value, and if a table isn't selected, none of its columns are considered even when their `is_selected` is `true`. Types follow a convention: a data source is its own type (`"type": "lakehouse_tables"`), a table ends in `.table`, and a column ends in `.column`.
+
+**fewshots.json** stores the example queries from section 3.2. Each entry has an `id`, the natural language `question`, and the `query` text, which may be SQL or KQL depending on the source type.
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-cicd/git-configure-lakehouse-few-shots.png" height="400"></p>
+
+Step back and look at what that structure means: every lever from sections 3.1 through 3.4 now has a file behind it. `aiInstructions` is section 3.1, `fewshots.json` is 3.2, `dataSourceInstructions` is 3.3, and `elements` with its `is_selected` flags is your schema selection from 3.4. Tuning an agent stops being an untracked change someone made in a UI one afternoon and becomes a reviewable diff.
+
+The **published** folder mirrors the draft structure. **Don't modify files in the published folder directly** - make changes in draft and publish them, so the published version is always generated from a controlled draft state.
+
+### Deployment pipelines
+
+Deployment pipelines move agents between workspaces mapped to lifecycle stages:
+
+1. Develop a new agent, or update an existing one, in the **development** workspace.
+2. Promote the changes to the **test** workspace for validation.
+3. Promote the tested changes to the **production** workspace, where end users consume them.
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-cicd/select-deployment-pipeline.png" height="400"></p>
+
+Assign a workspace to each stage before deploying. If you don't assign one to test or production, Fabric creates it automatically, named after the development workspace with `[test]` or `[prod]` appended. To deploy, go to the stage you're deploying from, select the items to promote, and select **Deploy**. You can review a deployment plan before applying changes, so only intended updates are promoted.
+
+<p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-cicd/deployment-test.png" height="400"></p>
+
+### Automating deployment
+
+The **Azure DevOps Pipelines extension for Fabric** provides native tasks that run **Fabric CLI** commands in Azure DevOps pipeline jobs, so teams can orchestrate CI/CD for data agent updates alongside or instead of Fabric deployment pipelines. To get started, install the extension from the Visual Studio Marketplace, set up a service connection in your Azure DevOps project, and add Fabric CLI tasks to your pipeline definition.
+
+For large-scale synchronization, the **Import/Export Item Definitions Batch APIs** (preview) let you export and import data agent definitions in batch to streamline promotion across environments.
+
+> **Important:** Service principals are supported in the Fabric data agent **only** as part of ALM scenarios - Git integration and deployment pipelines. That support doesn't extend to other data agent features. If you need to interact with a data agent outside of ALM workflows, service principal isn't supported.
+
+### Publishing in a promoted world
+
+Publishing (Module 02) takes on extra weight once you have multiple workspaces. A data agent must be **published** to be consumable through any channel - Copilot in Power BI, Microsoft Copilot Studio, or Foundry tools. An unpublished agent isn't accessible for consumption **even if it sits in the production workspace**.
+
+That creates two rules worth enforcing:
+
+- **Limit publishing from the development workspace to authorized users** who are actively building and assessing the agent, and restrict access to that workspace so unfinished or experimental agents aren't exposed to a broader audience.
+- **End users should only access agents published from the production workspace**, so they interact with stable, approved versions.
+
+### Best practices and limitations
+
+<table style="tr:nth-child(even) {background-color: #f2f2f2;}; text-align: left; display: table; border-collapse: collapse; border-spacing: 2px; border-color: gray;">
+
+  <tr><th style="background-color: #1b20a1; color: white;">Do this</th> <th style="background-color: #1b20a1; color: white;">Why</th></tr>
+
+  <tr><td>Use a dedicated branch for data agent development, and merge to main after code review</td><td>Instruction and example query changes get the same scrutiny as code.</td></tr>
+  <tr><td>Keep related resources - data sources, agents, notebooks, pipelines - in the same workspace</td><td>Makes promotion far simpler.</td></tr>
+  <tr><td>Test changes in the test workspace before promoting to production</td><td>Your benchmark set from section 3.1 is exactly what to run there.</td></tr>
+  <tr><td>Use descriptive commit messages</td><td>"Updated instructions" tells a future reviewer nothing.</td></tr>
+  <tr><td>Never change files in the published folder directly</td><td>The published version should always be generated from a controlled draft.</td></tr>
+  <tr><td>Use environment-agnostic configuration patterns, such as connection references via Variable Library where supported</td><td>Avoids hardcoding environment-specific values, easing branch merges and cross-stage deployments.</td></tr>
+
+</table>
+
+<br>
+
+Known limitations to plan around:
+
+- Only workspaces connected to a Git repository can use Git-based ALM features.
+- Service principals are supported only for ALM scenarios.
+- Deployment pipelines require the source and target workspaces to be in the **same tenant**.
+- Large numbers of frequent commits can impact repository size and performance.
+
+<br>
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: TODO: Activity Name</b></p>
+
+TODO: Activity Description and tasks
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
+
+TODO: Enter activity description with checkbox
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
+
+TODO: Enter activity steps description with checkbox
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+<h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/bulletlist.png">Data Agent Best Practices</h2>
+
+Everything in this module comes back to a short list of practices that Microsoft publishes as [best practices for configuring your data agent](https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configuration-best-practices). Use this as your review checklist when an agent isn't performing - work down it in order, because the early items are the ones people skip and then spend weeks compensating for with instructions.
+
+<table style="tr:nth-child(even) {background-color: #f2f2f2;}; text-align: left; display: table; border-collapse: collapse; border-spacing: 2px; border-color: gray;">
+
+  <tr><th style="background-color: #1b20a1; color: white;">#</th> <th style="background-color: #1b20a1; color: white;">Practice</th> <th style="background-color: #1b20a1; color: white;">What it means in practice</th> <th style="background-color: #1b20a1; color: white;">Section</th></tr>
+
+  <tr><td>1</td><td><b>Get your data AI ready</b></td><td>Use clear, descriptive table and column names. <code>CustomerOrders</code> and <code>order_submission_date</code>, not <code>Table1</code> and <code>col1</code>. The agent reads your schema as documentation - so make it readable.</td><td>-</td></tr>
+  <tr><td>2</td><td><b>Create specialized agents for specific domains</b></td><td>A focused agent beats a general-purpose one. Narrowing scope improves precision and reduces ambiguity in query interpretation.</td><td>3.1</td></tr>
+  <tr><td>3</td><td><b>Minimize the data source scope</b></td><td>Attach only the sources you need, and select only the relevant tables and columns. Aim for <b>25 tables or fewer</b> per data source.</td><td>3.4</td></tr>
+  <tr><td>4</td><td><b>Be specific about what to do, not just what not to do</b></td><td>Give the agent the correct path, including what to do when data is missing.</td><td>3.1</td></tr>
+  <tr><td>5</td><td><b>Define business terms, abbreviations, and synonyms</b></td><td>Calendar vs. fiscal year, "quarter", "SKU", "NPS", "MAU". Cross-source definitions go in agent instructions; dataset-specific ones go in data source instructions.</td><td>3.1, 3.3</td></tr>
+  <tr><td>6</td><td><b>Use leading words to nudge query generation</b></td><td>Embed syntax fragments such as <code>LIKE '%bike%'</code> to signal the expected query shape.</td><td>3.3</td></tr>
+  <tr><td>7</td><td><b>Write clear, focused instructions; avoid unnecessary detail</b></td><td>Cut broad scope, unreliable sources, stale history, and vague fallbacks. They dilute the agent's focus.</td><td>3.1</td></tr>
+  <tr><td>8</td><td><b>Write detailed data agent instructions</b></td><td>Cover role, expected behavior, tone, use cases, preferred sources, and fallback behavior when information is missing.</td><td>3.1</td></tr>
+  <tr><td>9</td><td><b>Provide detailed data source instructions</b></td><td>Purpose, question types, required columns, join logic, and typical value formats - remembering the agent can't see row values before it queries.</td><td>3.3</td></tr>
+  <tr><td>10</td><td><b>Use example queries to express complex query logic</b></td><td>When logic involves filtering, joins, aggregations, or date handling, a well-formed query is clearer and more efficient than prose.</td><td>3.2</td></tr>
+
+</table>
+
+<br>
+
+Two habits tie the list together. First, **tune from evidence** - keep a benchmark set, diagnose why a response was wrong before changing anything, and use run steps to see what the agent actually did. Second, **treat the agent as an evolving system**, not a configuration you set once and forget. Schemas change, business rules change, and the questions your users ask change with them.
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/owl.png"><b>For Further Study</b></p>
+<ul>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configurations" target="_blank">Data agent configurations</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configuration-best-practices" target="_blank">Best practices for configuring your data agent</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-example-queries" target="_blank">Data agent example queries</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/develop-iterative-process-data-agent" target="_blank">Adopting an iterative process for improving your data agent</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-routing" target="_blank">Improve data source routing</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing" target="_blank">Fabric data agent sharing and permission management</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-source-control" target="_blank">Source Control, CI/CD, and ALM for Fabric data agent</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent" target="_blank">Evaluate a Fabric data agent</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/fabric-data-agent-sdk" target="_blank">Fabric data agent SDK</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/semantic-model-best-practices" target="_blank">Semantic model sources for a Fabric data agent</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/cicd/git-integration/intro-to-git-integration" target="_blank">What is Microsoft Fabric Git integration?</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/get-started-with-deployment-pipelines" target="_blank">Get started with deployment pipelines</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/get-started/whats-new" target="_blank">As always, this is a fast-changing technology, so check this reference for the latest improvements</a></li>
+</ul>
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+Congratulations! You have completed this Module. You can now tune a data agent with agent-level instructions and example queries, write data source instructions that produce correct queries, diagnose and fix data source routing across multiple sources, share an agent under the right permission model while respecting RLS and CLS, and manage an agent's configuration through Git and deployment pipelines.
+
+If you understand the concepts here and have completed all of the Activities, you can [proceed to the next Module](04%20-%20Data%20Modeling%20for%20AI%20and%20Ontologies.md).
