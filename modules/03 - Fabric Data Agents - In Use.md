@@ -215,7 +215,7 @@ The reason is simple: a well-formed query is often clearer and more efficient th
 
 ### How the agent uses them
 
-When a user asks a question, the agent performs a **vector similarity search** across your examples for that data source, retrieves the most relevant ones, and passes them into its augmented prompt to guide query generation. (Microsoft Learn cites the top three to four examples depending on the article - the number matters less than the principle: only your *most similar* examples influence any given answer.)
+When a user asks a question, the agent performs a **vector similarity search** across your examples for that data source, retrieves the most relevant ones - on the order of the top three or four - and passes them into its augmented prompt to guide query generation. The principle matters more than the exact number: only your *most similar* examples influence any given answer.
 
 Two consequences follow from that, and both are easy to miss:
 
