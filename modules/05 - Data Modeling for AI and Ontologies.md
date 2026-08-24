@@ -136,13 +136,13 @@ Use this pattern when binding concepts:
 
 The data agent still respects the permissions of the user asking the question. Modeling does not grant access. It gives the agent a better map of what it is already allowed to query.
 
-Part 2 of the ontology tutorial is where this concept becomes practical. You enrich the ontology by adding a new *Freezer* entity type, binding static data from the lakehouse, binding time-series data from Eventhouse, and creating the relationship that connects stores to the freezers they operate.
+Parts 2 and 3 of the ontology tutorial are where this concept becomes practical. In Part 2, you enrich the ontology by adding a new *Freezer* entity type, binding static data from the lakehouse, binding time-series data from Eventhouse, and creating the relationship that connects stores to the freezers they operate. In Part 3, you inspect the resulting entity instances, relationship graphs, and graph queries to confirm the bindings are producing the business paths you expected.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Complete Tutorial Part 2 - Enrich the Ontology with Additional Data</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Complete Tutorial Parts 2 and 3 - Enrich and View the Ontology</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Bind additional business concepts to physical data so the ontology represents both relatively static business data and live operational context.
+Bind additional business concepts to physical data, then inspect the resulting instances and relationship graph so the ontology represents both relatively static business data and live operational context.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
@@ -151,17 +151,19 @@ Bind additional business concepts to physical data so the ontology represents bo
 3. Bind the static freezer data from the lakehouse.
 4. Bind the time-series freezer telemetry from Eventhouse.
 5. Create the relationship type that connects *Store* to *Freezer*.
-6. When you finish, write down which business concept, source item, key, properties, and relationship were added.
+6. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-3-preview-ontology">Tutorial Part 3: View the Ontology</a> in a new browser tab.
+7. Follow the tutorial steps to view entity instances, inspect time-series data, explore the relationship graph, and run graph queries.
+8. When you finish, write down which business concept, source item, key, properties, relationship, and graph path were added or validated.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <h2 id="5-4"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.4 - Instructions, Examples, and Evaluation</h2>
 
-The model is not done when the objects exist. First, you need to inspect whether the ontology behaves the way the business expects. Then the agent needs guidance on when to use it.
+The model is not done when the objects exist. After you validate the ontology, the next step is to expose it through an agent so users can ask natural-language questions against those concepts and relationships.
 
 Microsoft Learn calls out two configuration levers that matter here: **data agent instructions** and **example queries**. Instructions tell the data agent how to choose sources and interpret business language. Example queries show the agent what a correct translation looks like for common questions. Evaluation gives you a repeatable way to test whether the agent is improving or just becoming more confident while being wrong, which is the worst kind of wrong.
 
-Part 3 of the ontology tutorial is the bridge between modeling and agent design. You view entity instances, inspect relationship graphs, and use graph queries to validate whether the ontology explains the business path you expected.
+Part 4 of the ontology tutorial connects the ontology to a Fabric data agent. This is the point where the model becomes consumable: users ask questions in natural language, and the agent grounds the answer in the ontology's entity types, relationships, definitions, and bindings.
 
 Useful instruction patterns:
 
@@ -179,21 +181,21 @@ Useful evaluation patterns:
 - Include permission-sensitive cases if your environment has RLS or CLS.
 - Re-run the same set after every modeling or instruction change.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Complete Tutorial Part 3 - View the Ontology</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Complete Tutorial Part 4 - Consume Ontology from Agents</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Inspect the ontology through entity instances, relationship graphs, and graph queries before you decide how the data agent should use it.
+Create a Fabric data agent that uses the ontology as a source, then test whether natural-language questions return answers grounded in business entities and relationships instead of raw table structure.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-3-preview-ontology">Tutorial Part 3: View the Ontology</a> in a new browser tab.
-2. Follow the tutorial steps to view entity instances and time-series data.
-3. Explore the relationship graph for the tutorial entities.
-4. Run the tutorial's graph queries and observe how the relationship path explains the answer.
-5. Write three natural-language questions a data agent should route to this ontology.
+1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-4-create-data-agent">Tutorial Part 4: Consume Ontology from Agents</a> in a new browser tab.
+2. Follow the tutorial steps to create a data agent and add the ontology as its source.
+3. Add the tutorial's recommended agent instruction when prompted.
+4. Ask the tutorial's natural-language questions and observe whether the answers reference ontology entities and relationships.
+5. Write three additional natural-language questions a business user would ask this ontology-backed agent.
 6. Write three questions that should still route to a lakehouse, warehouse, semantic model, or KQL database instead.
-7. Save those questions for your evaluation set and source-routing instructions.
+7. Save those questions for your evaluation set and source-routing notes.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -205,6 +207,7 @@ Inspect the ontology through entity instances, relationship graphs, and graph qu
   <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-1-create-ontology">Tutorial Part 1: Create an Ontology</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-2-enrich-ontology">Tutorial Part 2: Enrich the Ontology with Additional Data</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-3-preview-ontology">Tutorial Part 3: View the Ontology</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-4-create-data-agent">Tutorial Part 4: Consume Ontology from Agents</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate your data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing">Fabric data agent sharing and permission management</a></li>
 </ul>
