@@ -121,8 +121,8 @@ This is a modular workshop, and in each section, you'll learn concepts, technolo
   <tr><td><a href="\modules\01 - Introduction and Overview.md" target="_blank">01 - Fabric IQ </a></td><td> <TODO: Insert Module 01 Quick Summary></td></tr>
   <tr><td><a href="\modules\02 - Fabric Data Agents.md" target="_blank">02 - Fabric Data Agents</a></td><td> <TODO: Insert Module 02 Quick Summary></td></tr>
   <tr><td><a href="\modules\03 - Fabric Data Agents - In Use.md" target="_blank">03 - Fabric Data Agents - In Use </a></td><td>  <TODO: Insert Module 03 Quick Summary> </td></tr>
-  <tr><td><a href="\modules\04 - Data Modeling for AI and Ontologies.md" target="_blank">04 - Data Modeling for AI & Ontologies </a></td><td> <TODO: Insert Module 04 Quick Summary> </td></tr>  
-  <tr><td><a href="\modules\05 - Fabric Graph and Fabric Ontologies.md" target="_blank">05 - Fabric Graph & Fabric Ontologies</a></td><td> <TODO: Insert Module 05 Quick Summary> </td></tr>  
+  <tr><td><a href="\modules\04 - Data Modeling for AI and Ontologies.md" target="_blank">04 - Data Modeling for AI & Ontologies </a></td><td> Model business entities, properties, relationships, definitions, and source bindings so data agents can reason over governed Fabric data reliably. </td></tr>
+  <tr><td><a href="\modules\05 - Fabric Graph and Fabric Ontologies.md" target="_blank">05 - Fabric Graph & Fabric Ontologies</a></td><td> Use graph thinking and ontologies for relationship traversal, dependency analysis, impact analysis, and multi-hop reasoning across connected business data. </td></tr>
   <tr><td><a href="\modules\06 - RTI, Operations Agents, and Data Agents.md" target="_blank">06 - RTI, Operations Agents, and Data Agents </a></td><td> <TODO: Insert Module 06 Quick Summary> </td></tr>
   <tr><td><a href="\modules\07 - Extending Data Agents Beyond Microsoft Fabric.md" target="_blank">07 - Extending Data Agents Beyond Microsoft Fabric </a></td><td> <TODO: Insert Module 07 Quick Summary> </td></tr>
   
