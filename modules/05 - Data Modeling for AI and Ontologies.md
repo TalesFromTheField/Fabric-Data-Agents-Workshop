@@ -58,8 +58,6 @@ Start with lakehouse, warehouse, mirrored database, or KQL when the question can
 
 Also note an important configuration difference: data agent query examples and query instructions are not available for every source type in the same way. Today, SQL and KQL-backed sources give you the most direct path for adding example queries and shaping how the agent translates natural language into queries. Semantic models and ontologies bring stronger business meaning, but they do not currently support the same query-instruction pattern inside data agents. That means your design work shifts from writing query examples to making the model, metadata, definitions, and relationships as clear as possible.
 
-<p><a href="https://youtu.be/v0mD01QP5gY"><img src="https://img.youtube.com/vi/v0mD01QP5gY/0.jpg" height = 200></a></p>
-
 Microsoft's ontology tutorial uses a Lakeshore Retail scenario to create entities such as stores, products, sales events, and freezer telemetry. Before you can talk about modeling choices, you need a working tutorial environment with the sample data loaded and the required Fabric items created.
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Complete Tutorial Part 0 - Introduction and Environment Setup</b></p>
@@ -157,13 +155,21 @@ Bind additional business concepts to physical data, then inspect the resulting i
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="5-4"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.4 - Instructions, Examples, and Evaluation</h2>
+<h2 id="5-4"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.4 - Agent Instructions, Example Queries, and Evaluation</h2>
 
 The model is not done when the objects exist. After you validate the ontology, the next step is to expose it through an agent so users can ask natural-language questions against those concepts and relationships.
 
-Microsoft Learn calls out two configuration levers that matter here: **data agent instructions** and **example queries**. Instructions tell the data agent how to choose sources and interpret business language. Example queries show the agent what a correct translation looks like for common questions. Evaluation gives you a repeatable way to test whether the agent is improving or just becoming more confident while being wrong, which is the worst kind of wrong.
+Two configuration levers matter here: **agent instructions** and **example queries**. Agent instructions describe how the data agent should behave, how it should interpret business language, and when it should prefer one source over another. Data source instructions add source-specific context such as table meaning, join logic, and business definitions. Example queries show the agent what a correct translation looks like for important questions.
+
+These are not cosmetic settings. They are how you turn a generic conversational interface into an analyst that understands your domain. In the data agent setup experience, instructions can be written and formatted in Markdown, which makes them easier for authors and reviewers to maintain. Example queries let you pair a natural-language question with a validated SQL or KQL query, so the agent has a trusted pattern to learn from when similar questions arrive.
+
+For this workshop, treat instructions and example queries as part of the model. Tables, columns, entity types, and relationships describe the data. Instructions and examples describe how the agent should use that data.
 
 Part 4 of the ontology tutorial connects the ontology to a Fabric data agent. This is the point where the model becomes consumable: users ask questions in natural language, and the agent grounds the answer in the ontology's entity types, relationships, definitions, and bindings.
+
+<p><a href="https://youtu.be/r18-STutAyE"><img src="https://img.youtube.com/vi/r18-STutAyE/0.jpg" height = 200></a></p>
+
+<p><a href="https://youtu.be/v0mD01QP5gY"><img src="https://img.youtube.com/vi/v0mD01QP5gY/0.jpg" height = 200></a></p>
 
 Useful instruction patterns:
 
@@ -192,10 +198,12 @@ Create a Fabric data agent that uses the ontology as a source, then test whether
 1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-4-create-data-agent">Tutorial Part 4: Consume Ontology from Agents</a> in a new browser tab.
 2. Follow the tutorial steps to create a data agent and add the ontology as its source.
 3. Add the tutorial's recommended agent instruction when prompted.
-4. Ask the tutorial's natural-language questions and observe whether the answers reference ontology entities and relationships.
-5. Write three additional natural-language questions a business user would ask this ontology-backed agent.
-6. Write three questions that should still route to a lakehouse, warehouse, semantic model, or KQL database instead.
-7. Save those questions for your evaluation set and source-routing notes.
+4. Watch <a href="https://youtu.be/r18-STutAyE">Microsoft Fabric: Data Agents Agent Instructions</a> and note how agent instructions, data source instructions, and example queries are organized in the setup experience.
+5. Watch <a href="https://youtu.be/v0mD01QP5gY">Microsoft Fabric: How to use Data Agent Example Queries</a> and note why a validated query pattern can change the answer the agent returns.
+6. Ask the tutorial's natural-language questions and observe whether the answers reference ontology entities and relationships.
+7. Write three additional natural-language questions a business user would ask this ontology-backed agent.
+8. Write three questions that should still route to a lakehouse, warehouse, semantic model, or KQL database instead.
+9. Save those questions for your evaluation set and source-routing notes.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -210,6 +218,8 @@ Create a Fabric data agent that uses the ontology as a source, then test whether
   <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-4-create-data-agent">Tutorial Part 4: Consume Ontology from Agents</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate your data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing">Fabric data agent sharing and permission management</a></li>
+  <li><a href="https://youtu.be/r18-STutAyE">Microsoft Fabric: Data Agents Agent Instructions</a></li>
+  <li><a href="https://youtu.be/v0mD01QP5gY">Microsoft Fabric: How to use Data Agent Example Queries</a></li>
 </ul>
 
 Congratulations! You have completed this module on Data Modeling for AI &amp; Ontologies. You now have a practical map from business language to Fabric data sources, plus the instructions and evaluation patterns you need to build on the graph and ontology concepts introduced earlier in the workshop.
