@@ -191,18 +191,6 @@ Expand the benchmark set over time so it covers the questions your users actuall
 
 <br>
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: TODO: Activity Name</b></p>
-
-TODO: Activity Description and tasks
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
-
-TODO: Enter activity description with checkbox
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
-
-TODO: Enter activity steps description with checkbox
-
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <h2 id="3.2"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">3.2 Using Example Queries</h2>
@@ -339,18 +327,6 @@ Resolving conflicts improves query determinism - which is usually what a busines
 
 <br>
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: TODO: Activity Name</b></p>
-
-TODO: Activity Description and tasks
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
-
-TODO: Enter activity description with checkbox
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
-
-TODO: Enter activity steps description with checkbox
-
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <h2 id="3.3"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">3.3 Data Source Instructions</h2>
@@ -476,18 +452,6 @@ Keep these instructions current. When new tables, columns, or business rules app
 
 <br>
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: TODO: Activity Name</b></p>
-
-TODO: Activity Description and tasks
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
-
-TODO: Enter activity description with checkbox
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
-
-TODO: Enter activity steps description with checkbox
-
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <h2 id="3.4"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">3.4 Data Agents with Multiple Data Sources</h2>
@@ -555,17 +519,17 @@ This is deliberately last. Explicit rules are maintenance debt: keep them concis
 
 <br>
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: TODO: Activity Name</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Instructions Please</b></p>
 
-TODO: Activity Description and tasks
+You are going to play a little game, courtesy of Sandeep Pawar and the Fabric CAT team.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-TODO: Enter activity description with checkbox
+Instruction documents arrive at your booth. Route each one to PREP FOR AI or AGENT INSTRUCTIONS — or feed anti-patterns to the SHREDDER. Misrouted documents earn a citation.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-TODO: Enter activity steps description with checkbox
+Follow the in-game instructions and see how you do => [The INSTRUCTIONS game](https://pawarbi.github.io/instructions-please)
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -643,18 +607,6 @@ The empty-result case is the dangerous one. An agent returning "no records found
 <i>Microsoft Fabric: Data Security & Data Agents - Tales From The Field</i>
 
 <br>
-
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: TODO: Activity Name</b></p>
-
-TODO: Activity Description and tasks
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
-
-TODO: Enter activity description with checkbox
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
-
-TODO: Enter activity steps description with checkbox
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -801,18 +753,6 @@ Known limitations to plan around:
 - Large numbers of frequent commits can impact repository size and performance.
 
 <br>
-
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: TODO: Activity Name</b></p>
-
-TODO: Activity Description and tasks
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
-
-TODO: Enter activity description with checkbox
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
-
-TODO: Enter activity steps description with checkbox
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
