@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataAgent",
+    "displayName": "Sales Analysis Agent",
+    "description": "Answers sales and market research questions."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "9d2915e2-2524-524e-8b96-303591495af9"
+  }
+}

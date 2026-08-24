@@ -689,13 +689,14 @@ Each data source folder contains **datasource.json** and, once you've added exam
 - `workspaceId` - the ID of the workspace that item lives in.
 - `dataSourceInstructions` - the instructions you wrote in section 3.3.
 - `displayName` - the name of the data source.
+- `type` - the source type, which is **not** simply the folder prefix. A lakehouse source is `lakehouse_tables`; a warehouse source is `data_warehouse`, even though its individual tables and columns are typed `warehouse_tables.table` and `warehouse_tables.column`.
 - `elements` - the schema map, listing every table and column in the source.
 
 Those first two fields are the ones that matter for CI/CD. They are recorded as literal GUIDs, so an agent promoted to another workspace still points at the *original* data source unless something rewrites them. That's the problem section 3.6's `parameter.yml` exists to solve.
 
-Each table carries an `is_selected` property: `true` means the agent can use it, `false` means it can't. Column entries also show `is_selected`, but **column-level selection isn't currently supported** - if a table is selected, all of its columns are included regardless of the column value, and if a table isn't selected, none of its columns are considered even when their `is_selected` is `true`. Types follow a convention: a data source is its own type (`"type": "lakehouse_tables"`), a table ends in `.table`, and a column ends in `.column`.
+Each table carries an `is_selected` property: `true` means the agent can use it, `false` means it can't. Column entries also show `is_selected`, but **column-level selection isn't currently supported** - if a table is selected, all of its columns are included regardless of the column value, and if a table isn't selected, none of its columns are considered even when their `is_selected` is `true`. Types follow a convention: a table ends in `.table` and a column ends in `.column`.
 
-`elements` isn't always a flat list. A warehouse source nests its entries - a `schema_grouping` element containing `warehouse_tables.schema` entries, each holding the tables - so read the tree rather than assuming one level.
+`elements` isn't a flat list. Both lakehouse and warehouse sources nest their entries - a `schema_grouping` element containing a `.schema` entry, containing a `table_grouping`, containing the tables, each containing its columns - so read the tree rather than assuming one level. Columns also carry a `data_type` holding a SQL type name such as `varchar`, `int`, or `decimal`.
 
 **fewshots.json** stores the example queries from section 3.2. Each entry has an `id`, the natural language `question`, and the `query` text, which may be SQL or KQL depending on the source type.
 
@@ -748,6 +749,8 @@ target_workspace = FabricWorkspace(
 publish_all_items(target_workspace)
 ```
 
+The library also offers a configuration-driven form, `deploy_with_config()`, which reads the same settings from a committed `config.yml` and is what the Fabric CLI's `fab deploy` runs internally. That's the form the demo below uses, because environment-specific settings belong in a reviewable file rather than in argument lists.
+
 Two behaviors are worth internalizing before you use it. First, it performs a **full deployment every time** - it doesn't inspect commit diffs, it makes the target workspace match the repository. Second, it matches items by **name and type**, so running the same deployment twice updates rather than duplicates.
 
 The interesting problem is the one the code above doesn't solve. Recall from the file layout above that a data agent's `datasource.json` records the **ID** of each attached data source. Deploy that file unchanged into production and the agent arrives correctly configured - and pointed at the *development* lakehouse. It won't error. It will answer questions, confidently, from the wrong environment.
@@ -776,7 +779,7 @@ Deploy the data agent you built in this module out of your workspace and into a 
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-Follow the walkthrough in [demos/module-03-fabric-cicd](../demos/module-03-fabric-cicd/README.md). The demo runs in six stages you can stop between, creates the production workspace for you, and deletes it again when you're done. It also includes ready-to-adapt GitHub Actions and Azure DevOps pipeline definitions.
+Follow the walkthrough in [demos/module-03-fabric-cicd](../demos/module-03-fabric-cicd/README.md). It ships a deployable sample workspace - a warehouse, a lakehouse, and a data agent attached to both - so you can run it without having finished the earlier modules, then swap in your own agent. It also includes ready-to-adapt GitHub Actions and Azure DevOps pipeline definitions, and a Fabric CLI variant of the same deployment.
 
 ### Publishing in a promoted world
 

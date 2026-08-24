@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Lakehouse",
+    "displayName": "MarketResearch",
+    "description": "Raw market research and survey data."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "e786621a-46c8-5e99-be53-e95337bac9fe"
+  }
+}

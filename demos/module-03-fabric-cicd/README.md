@@ -2,11 +2,9 @@
 
 A working, end-to-end demonstration of code-first CI/CD for Fabric data agents using Microsoft's [`fabric-cicd`](https://microsoft.github.io/fabric-cicd/) Python library.
 
-Section 3.6 of Module 03 shows that everything you tuned in this module — agent instructions, example queries, data source instructions, table selections — is **configuration stored in files**. This demo takes the next step and proves those files are deployable: it moves a data agent out of a development workspace into a separate production workspace, re-points it at production data, and verifies the result.
+Section 3.6 of Module 03 shows that everything you tuned in this module — agent instructions, example queries, data source instructions, table selections — is **configuration stored in files**. This demo takes the next step and deploys those files into a workspace, re-pointing the agent at that workspace's data on the way in.
 
-**Runtime:** about 15 minutes presented, under 3 minutes of actual script execution.
-
-Measured against a real workspace (8 items - a data agent, lakehouse, warehouse, semantic model, and four notebooks): `bootstrap` ~10s, `export` ~30s, `scan` <1s, `verify` ~20s. `deploy` is **1m19s** creating items from scratch and **31s** re-deploying into a workspace that already has them - which is another reason to pre-run the demo and leave the workspace in place.
+**Runtime:** about 10 minutes presented, well under a minute of script execution.
 
 ---
 
@@ -14,25 +12,36 @@ Measured against a real workspace (8 items - a data agent, lakehouse, warehouse,
 
 | Beat | What the audience sees |
 | --- | --- |
-| Configuration is code | The real on-disk layout of a deployed data agent — `stage_config.json`, `datasource.json`, `fewshots.json` |
-| Deployment is boring | Four lines of Python move an agent between workspaces |
-| The silent failure | A data agent deployed as-is **keeps querying the dev lakehouse** and still returns answers |
+| Configuration is code | The real on-disk layout of a data agent — `stage_config.json`, `datasource.json`, `fewshots.json` |
+| Deployment is a library call | One function, driven by a config file |
+| The silent failure | A data agent deployed as-is **keeps querying the dev lakehouse** and still answers |
 | Parameterization is the fix | `parameter.yml` re-points every environment-specific reference |
-| Re-runs are safe | Deploying twice updates; it does not duplicate |
-| Structure ships, data does not | The prod lakehouse arrives empty |
+| Re-runs are safe | Deploying twice updates in place; it does not duplicate |
+| Structure ships, data does not | The lakehouse and warehouse arrive empty |
 
-The silent failure is the point of the demo. An agent pointed at the wrong data source does not throw an error — it answers confidently from the wrong environment. That is why parameterization is not optional.
+The silent failure is the point. An agent pointed at the wrong data source does not throw — it answers confidently from the wrong environment. That is why parameterization is not optional.
+
+---
+
+## What the library does and does not do
+
+Worth stating plainly, because it shapes everything here:
+
+> **`fabric-cicd` makes a target workspace match a directory of item definitions. That is its entire job.**
+
+It does **not** create workspaces, delete them, export items, or copy data. Those are real needs, they're just not this library's. The Fabric CLI covers them — see [`fabric-cli/`](fabric-cli/) for the same deployment driven that way, plus workspace create, list, export, and delete.
+
+That's why this demo asks you to create the target workspace yourself. Auto-creating it would mean hand-rolling REST calls, which would bury the thing the demo is meant to teach.
 
 ---
 
 ## Prerequisites
 
-- **Python 3.10 or newer.** `fabric-cicd` 1.3.0 advertises Python 3.9 support but does not import on it. macOS ships 3.9 as the system Python, so create a virtual environment with a newer interpreter.
+- **Python 3.10 or newer.** `fabric-cicd` 1.3.0 advertises 3.9 support but does not import on it. macOS ships 3.9 as the system Python, so use a newer interpreter.
 - **Azure CLI**, logged in: `az login`
-- **A Fabric workspace on a capacity** containing the lakehouse and data agent you built in Modules 02 and 03.
-- **Permission to create a workspace** in your tenant. The demo creates a second workspace and deletes it at the end.
+- **A Fabric workspace on a capacity** to deploy into. Create it in the Fabric portal, or with `fabric-cli/deploy-with-fab.sh create`.
 
-You do **not** need a GitHub or Azure DevOps repository connected to Fabric. See [How this differs from real Git integration](#how-this-differs-from-real-git-integration) for why.
+You do **not** need a Git-connected workspace, and you do not need to have finished Modules 02 and 03 — the sample agent in `sample-workspace/` stands in.
 
 ---
 
@@ -48,247 +57,190 @@ pip install -r requirements.txt
 az login
 ```
 
-Confirm the library and your identity are both working:
+Then point `config.yml` at your workspace:
 
-```bash
-python -c "import fabric_cicd; print('fabric-cicd ready')"
-az account show --query user.name -o tsv
+```yaml
+core:
+    workspace:
+        TEST: "Your Workspace [test]"
+        PROD: "Your Workspace [prod]"
 ```
 
 ---
 
 ## Running the demo
 
-Run it one stage at a time so you can talk between each. Every stage is independently re-runnable.
-
 ```bash
-python fabric_cicd_demo.py bootstrap --dev-workspace "Your Workshop Workspace"
-python fabric_cicd_demo.py export
-python fabric_cicd_demo.py scan
-python fabric_cicd_demo.py deploy
-python fabric_cicd_demo.py verify
-python fabric_cicd_demo.py destroy
+python deploy.py inspect --environment PROD    # local only, no API calls
+python deploy.py deploy  --environment PROD
 ```
-
-Or run the whole thing unattended:
-
-```bash
-python fabric_cicd_demo.py all --dev-workspace "Your Workshop Workspace"
-```
-
-State carries between stages in `.demo-state.json`, so you can stop, answer questions, and pick up later — even in a new terminal.
 
 ---
 
-## Stage by stage, with talk track
+## Walkthrough, with talk track
 
-### 1. `bootstrap` — create the target environment
-
-```bash
-python fabric_cicd_demo.py bootstrap --dev-workspace "Your Workshop Workspace"
-```
-
-Resolves your existing workspace, reads its capacity, and creates `Your Workshop Workspace [prod]` on that same capacity. If the workspace already exists it is reused, so re-running is safe.
-
-> **Say this:** "Nothing here is `fabric-cicd` yet — this is plain Fabric REST, standing in for whatever provisions environments in your organization. Most of you already have dev, test, and prod workspaces and would skip this entirely."
-
-### 2. `export` — get the item definitions onto disk
+### 1. `inspect` — what is on disk, and what will change
 
 ```bash
-python fabric_cicd_demo.py export
+python deploy.py inspect --environment PROD
 ```
 
-Downloads each in-scope item's definition from the dev workspace and writes it out as `workspace/<Name>.<Type>/…`, then prints the data agent's file tree.
+Reads `config.yml`, walks the repository directory, and prints every item it finds plus the replacement rules that will apply. **No API calls.**
 
-> **Say this:** "This is the folder Module 03 section 3.6 described, and it's what Fabric Git integration commits for you. `stage_config.json` holds your agent instructions from 3.1. `fewshots.json` holds your example queries from 3.2. `datasource.json` holds your data source instructions from 3.3 and your table selections from 3.4. Every lever you spent this module tuning is now a file you can review in a pull request."
+> **Say this:** "Three items: a warehouse, a lakehouse, and the data agent that queries both. The agent's folder is Module 03 section 3.6 in file form — `stage_config.json` holds the agent instructions from 3.1, `fewshots.json` holds the example queries from 3.2, `datasource.json` holds the data source instructions from 3.3 and the table selections from 3.4. Everything you tuned this module is now a file you can review in a pull request."
 
-Point at the lakehouse folder too: it contains only a `.platform` file. Fabric creates a lakehouse as an empty shell with no downloadable definition — a detail that matters two stages from now.
+Then the replacement table:
 
-### 3. `scan` — find what breaks across environments
+```
+    FIND (dev value)                       REWRITES TO                            SCOPE
+    22222222-2222-2222-2222-222222222222   $items.Warehouse.ContosoSales.$id      DataAgent
+    33333333-3333-3333-3333-333333333333   $items.Lakehouse.MarketResearch.$id    DataAgent
+    11111111-1111-1111-1111-111111111111   $workspace.$id                         DataAgent
+```
+
+> **Say this:** "Here's the whole problem. The agent has its development data source GUIDs baked in. Deploy it untouched and it lands in production still reading dev data. It doesn't fail. It answers — and the answers look fine."
+
+`$items.<Type>.<Name>.$id` resolves at deploy time against the workspace being deployed into, so `parameter.yml` holds no target-specific GUIDs and keeps working as you add environments.
+
+Note there is **no dry-run** in `fabric-cicd`. This local read is the closest thing to a plan step.
+
+### 2. `deploy` — hand it to the library
 
 ```bash
-python fabric_cicd_demo.py scan
+python deploy.py deploy --environment PROD
 ```
 
-This is the dry run. Nothing deploys. The script reads every exported file, finds each GUID that refers to the dev workspace or a dev item, reports where it appears, and writes `workspace/parameter.yml`.
-
-You will see something like:
-
-```
-    KIND       WHAT                               FOUND IN         REWRITES TO
-    item       Lakehouse / Cold Chain LH          DataAgent        $items.Lakehouse.Cold Chain LH.$id
-    workspace  (dev workspace)                    DataAgent        $workspace.$id
-```
-
-> **Say this:** "Here is the whole problem in one table. The agent has your dev lakehouse's GUID baked into it. Deploy it as-is and the agent lands in production and keeps answering questions from dev data. It doesn't fail. It doesn't warn you. It just quietly answers from the wrong environment — and the answers look fine."
-
-Open the generated `parameter.yml` and read one entry aloud:
-
-```yaml
-find_replace:
-    - find_value: "8f3c…"                                    # the dev lakehouse GUID
-      replace_value:
-          PROD: "$items.Lakehouse.Cold Chain LH.$id"          # whatever it is in the target
-      item_type: "DataAgent"
-```
-
-> **Say this:** "`$items.Lakehouse.<name>.$id` is resolved by `fabric-cicd` at deploy time, against the workspace it is deploying into. That means this file has no environment-specific GUIDs on the right-hand side — it works for test, prod, and every workspace you add later."
-
-If the scan reports **unrecognized** GUIDs, that is usually a connection. Say so: connections are not source controlled, must already exist in the target, and the deploying identity needs access to them.
-
-### 4. `deploy` — hand it to `fabric-cicd`
-
-```bash
-python fabric_cicd_demo.py deploy
-```
-
-Open `fabric_cicd_demo.py` and show the block marked `The entire fabric-cicd surface area for this demo`:
+The whole library surface for this demo:
 
 ```python
-target_workspace = FabricWorkspace(
-    workspace_id=state.prod_workspace_id,
-    environment=args.environment,             # matches a key in parameter.yml
-    repository_directory=str(workspace_root),
-    item_type_in_scope=list(args.item_types),
-    token_credential=args.credential,
+result = deploy_with_config(
+    config_file_path="config.yml",
+    token_credential=AzureCliCredential(),
+    environment="PROD",
 )
-
-publish_all_items(target_workspace)
 ```
 
-> **Say this:** "That's the library. Everything else in this script is scaffolding to make the demo runnable in one workspace. `fabric-cicd` publishes in dependency order — the lakehouse is created before the agent that references it — so you don't sequence anything yourself."
+> **Say this:** "That's it. `config.yml` names the workspace, the folder, the item types, and the parameter file. The library publishes in dependency order — warehouse and lakehouse before the agent that references them — so you don't sequence anything yourself."
 
-Then run it again:
+The demo then prints what landed, with IDs taken from `DeploymentResult.responses` rather than a follow-up API call (that's the `enable_response_collection` feature flag in `config.yml`):
+
+```
+  DataAgent    Sales Analysis Agent     5c82c38e-...
+  Lakehouse    MarketResearch           d7491b37-...
+  Warehouse    ContosoSales             69cca313-...
+```
+
+Run it a second time:
+
+> **Say this:** "Same command, same result. `fabric-cicd` matches items by name and type, so a second run updates instead of duplicating. That matters — your pipeline runs on every merge, and full deployment every time is the design. It doesn't diff commits; it makes the workspace match the repo."
+
+### 3. Show the result in Fabric
+
+Open the agent in the target workspace and look at its data sources: they point at that workspace's warehouse and lakehouse, not the development ones.
+
+> **Say this:** "Notice the lakehouse and warehouse are empty. `fabric-cicd` deploys item *structure*, not data. Loading data is a separate pipeline, and that's correct — you don't want your deployment tool copying rows between environments."
+
+One more beat: the deployed agent is a **draft**. An agent must be published to be consumable from Copilot in Power BI, Copilot Studio, or Foundry — even sitting in production. Deployment and publishing are two different steps.
+
+---
+
+## The two library APIs
+
+`deploy.py` can drive either, so you can show both:
 
 ```bash
-python fabric_cicd_demo.py deploy
+python deploy.py deploy --environment PROD                    # deploy_with_config()
+python deploy.py deploy --environment PROD --mode explicit    # FabricWorkspace + publish_all_items()
 ```
 
-> **Say this:** "Same command, same result. `fabric-cicd` matches items by name and type, so a second run updates instead of duplicating. This matters: your pipeline runs on every merge, and full deployment every time is the design — it doesn't diff commits, it makes the workspace match the repo."
+| | Config-driven | Explicit |
+| --- | --- | --- |
+| Call | `deploy_with_config()` | `FabricWorkspace(...)` + `publish_all_items()` |
+| Settings live in | `config.yml`, committed | Python arguments |
+| Multi-environment | Built in, via environment mappings | You write the branching |
+| Returns | `DeploymentResult` | `None` |
+| Used by | `fab deploy` internally | — |
 
-### 5. `verify` — prove it worked
-
-```bash
-python fabric_cicd_demo.py verify
-```
-
-Lists what landed in prod, then re-exports the deployed agent and checks which GUIDs it now carries. You want:
-
-```
-  OK  No dev-workspace references remain in the deployed agent. Re-pointing worked.
-```
-
-Now open the prod workspace in the browser, open the data agent, and show its data source pointing at the **prod** lakehouse.
-
-> **Say this:** "The agent is in production, wired to production data, with the instructions and example queries you wrote — and none of it was clicked into a UI."
-
-Then set expectations honestly:
-
-> **Say this:** "Notice the prod lakehouse is empty. `fabric-cicd` deploys item *structure*, not data. Loading production data is a separate pipeline, and that's correct — you don't want your deployment tool copying rows between environments."
-
-One more beat worth landing: the deployed agent is a **draft**. An agent must be published to be consumable through Copilot in Power BI, Copilot Studio, or Foundry — even sitting in production. Deployment and publishing are two different steps.
-
-### 6. `destroy` — clean up
-
-```bash
-python fabric_cicd_demo.py destroy
-```
-
-Prompts before deleting the prod workspace. Add `--yes` to skip the prompt. Your dev workspace and the exported folder are untouched.
+Config-driven is the recommended path. Explicit is useful when settings are computed at runtime.
 
 ---
 
 ## Useful variations
 
-Show the destructive half of "the repository is the source of truth":
+Show the destructive half of "the repository is the source of truth" by setting `unpublish.skip: false` in `config.yml`, or:
 
 ```bash
-# Delete a folder from workspace/, then:
-python fabric_cicd_demo.py deploy --unpublish-orphans
+python deploy.py deploy --environment PROD --mode explicit --unpublish-orphans
 ```
 
-`unpublish_all_orphan_items` removes target items the repository no longer defines. It is off by default here for a reason. Note that lakehouses, warehouses, SQL databases, and eventhouses are **not** deleted unless you also opt in with a feature flag such as `enable_lakehouse_unpublish` — the library protects data-bearing items by default.
+`unpublish_all_orphan_items` removes target items the repository no longer defines. It's off by default here for a reason. Lakehouses, warehouses, SQL databases, and eventhouses are protected even then, and need a feature flag such as `enable_lakehouse_unpublish` — the library guards data-bearing items by default.
 
-Deploy a subset:
+See the exact API calls:
 
 ```bash
-python fabric_cicd_demo.py deploy --item-types DataAgent
+python deploy.py deploy --environment PROD --debug
 ```
 
-Target a different environment key:
-
-```bash
-python fabric_cicd_demo.py scan --environment TEST
-python fabric_cicd_demo.py deploy --environment TEST
-```
-
-See exactly which API calls are made:
-
-```bash
-python fabric_cicd_demo.py deploy --debug
-```
-
-Run as a service principal instead of your own identity:
+Run as a service principal:
 
 ```bash
 export AZURE_TENANT_ID=… AZURE_CLIENT_ID=… AZURE_CLIENT_SECRET=…
-python fabric_cicd_demo.py deploy --auth spn
+python deploy.py deploy --environment PROD --auth spn
 ```
 
 ---
 
-## How this differs from real Git integration
+## Where the sample workspace comes from
 
-`fabric-cicd` deploys from a folder of item definitions that normally arrives via **Fabric Git integration**: you connect a workspace to Azure DevOps or GitHub in workspace settings, Fabric commits the items, and your pipeline checks that repository out.
+`sample-workspace/` is a hand-built Fabric workspace export: a warehouse, a lakehouse, and a data agent attached to both. It exists so the demo runs without requiring a Git-connected workspace or a finished Module 02.
 
-Wiring a workshop room up to a Git provider is a lot of setup for one demo, so the `export` stage calls the Fabric item definition API to produce the same folder locally. **The files, the folder names, and the deployment behaviour are identical** — only the delivery mechanism differs.
+In real use that folder comes from **Fabric Git integration** — connect a workspace to Azure DevOps or GitHub in workspace settings, Fabric commits the items, and your pipeline checks the repository out. The files, the folder names, and the deployment behaviour are identical; only the delivery differs.
 
-Two consequences worth naming out loud:
-
-- In real use you would **not** run `export`. Git integration produces the folder, and code review happens on the resulting pull request.
-- In real use `parameter.yml` is **hand-written once and committed**, not regenerated. The `scan` stage exists to show you what to put in it.
-
-`ci_deploy.py` in this folder is the production-shaped version: about 40 lines, environment-variable driven, no export and no workspace creation. That is what a pipeline actually runs.
+To deploy your own agent instead, replace `sample-workspace/` with your Git-synced folder and update `parameter.yml` with your development GUIDs.
 
 ---
 
 ## Taking it to a pipeline
 
-`pipelines/` contains working starting points for both platforms:
+`pipelines/` has working starting points:
 
 | File | Platform | Notes |
 | --- | --- | --- |
 | `pipelines/github-actions.yml` | GitHub Actions | OIDC login via `azure/login`, no stored secret |
-| `pipelines/azure-pipelines.yml` | Azure DevOps | `AzureCLI@2` with an ARM service connection, PPE → PROD stages with approvals |
+| `pipelines/azure-pipelines.yml` | Azure DevOps | `AzureCLI@2` with a service connection, TEST → PROD with approvals |
 
-Both call `ci_deploy.py`. Point them at the folder Fabric Git integration commits, set the workspace ID per environment, and match `FABRIC_ENVIRONMENT` to a key in your `parameter.yml`.
+Both call `deploy.py`. Setup needs an Entra app with Contributor or Admin on the target workspaces, the Fabric tenant setting **Service principals can use Fabric APIs** enabled, and a workspace per environment in `config.yml`.
 
-Setup either one needs:
-
-1. An Entra app registration with Contributor or Admin on the target workspaces.
-2. The Fabric tenant setting **Service principals can use Fabric APIs** enabled.
-3. A workspace ID stored per environment.
-
-> **Important:** Service principals are supported by Fabric data agents **only** for ALM scenarios — Git integration and deployment pipelines. A service principal can deploy an agent; it cannot query one.
-
-If you would rather not write Python at all, the [Fabric CLI](https://microsoft.github.io/fabric-cli/) `fab deploy` command runs `fabric-cicd` under the hood using a shared `config.yml`.
+> **Important:** Fabric data agents support service principals for **ALM only**. A service principal can deploy an agent; it cannot query one.
 
 ---
 
 ## Gotchas worth mentioning
 
+Several of these came out of building this demo against a live tenant.
+
 | Symptom | Cause |
 | --- | --- |
 | Agent answers from the wrong data | Data source GUID not parameterized — the failure this demo exists to show |
+| Replacements silently did not happen | `--environment` doesn't match a key in `parameter.yml`. No match means no replacement, **and no error** |
 | `ImportError` on `fabric_cicd` | Python 3.9. Use 3.10 or newer |
-| Prod lakehouse has no tables | Expected. Item structure deploys; data does not |
+| Target lakehouse and warehouse are empty | Expected. Item structure deploys; data does not |
 | Agent not usable in prod | It deployed as a draft. Publish it |
+| `DisplayName is Invalid for ArtifactType` | **Lakehouse names cannot contain spaces.** Warehouse names can |
+| Data agent fails with `Unknown error` | The API gives no detail. In practice it means a malformed definition — check `type` in each `datasource.json`, below |
 | Deployment fails on a connection GUID | Connections are not source controlled. Create them in the target first, and give the deploying identity access |
-| Deployment fails resolving a SQL endpoint | When any `$items`/`$workspace` variable is used, `fabric-cicd` eagerly resolves SQL endpoints for **every** lakehouse and warehouse in the target. The library waits for provisioning on its own (observed: ~10s on a fresh lakehouse), but a slow tenant can still time out — re-run if so |
-| Replacements silently did not happen | `--environment` does not match a key in `parameter.yml`. No match means no replacement, and no error |
-| Nothing found to export | The item types are out of scope. Pass `--item-types` |
+| Deployment stalls resolving a SQL endpoint | When any `$items`/`$workspace` variable is used, the library eagerly resolves SQL endpoints for every lakehouse and warehouse in the target. It waits for provisioning on its own — about 10s on a fresh lakehouse |
 
-That second-to-last one is worth dwelling on: a mismatched environment key fails **open**, not closed. It deploys successfully with dev values still in place.
+The `type` field in `datasource.json` is not what you'd guess:
+
+| Data source | Folder prefix | `type` | Element types |
+| --- | --- | --- | --- |
+| Lakehouse | `lakehouse-tables-` | `lakehouse_tables` | `lakehouse_tables.table`, `.column` |
+| Warehouse | `data-warehouse-` | `data_warehouse` | `warehouse_tables.table`, `.column` |
+
+A warehouse source is `data_warehouse` at the top level but `warehouse_tables.*` for its elements. Getting that wrong produces the opaque `Unknown error` above.
+
+Also note that `data_type` on a column must be a SQL type name — `varchar`, `int`, `decimal`, `float`, `date`, `bit`, `char`, `bigint`, `smallint`. Values like `string` or `double` are rejected.
 
 ---
 
@@ -296,21 +248,21 @@ That second-to-last one is worth dwelling on: a mismatched environment key fails
 
 | File | Purpose |
 | --- | --- |
-| `fabric_cicd_demo.py` | The staged classroom demo |
-| `ci_deploy.py` | Production-shaped deployment script for pipelines |
-| `parameter.example.yml` | Annotated reference showing `find_replace`, regex, `key_value_replace`, and `spark_pool` |
-| `requirements.txt` | Pinned dependencies |
+| `deploy.py` | The demo — `inspect` and `deploy`, pure fabric-cicd |
+| `config.yml` | Deployment configuration, consumed by both `deploy.py` and `fab deploy` |
+| `sample-workspace/` | A deployable Fabric workspace: warehouse, lakehouse, data agent |
+| `sample-workspace/parameter.yml` | The environment-specific replacements |
+| `parameter.example.yml` | Annotated reference covering options the demo doesn't use |
+| `fabric-cli/` | The same deployment via the Fabric CLI, plus workspace lifecycle |
 | `pipelines/` | GitHub Actions and Azure DevOps samples |
-| `workspace/` | Generated by `export`. Git-ignored |
-| `.demo-state.json` | Generated state carried between stages. Git-ignored |
 
 ---
 
 ## Further reading
 
 - [fabric-cicd documentation](https://microsoft.github.io/fabric-cicd/latest/)
-- [Parameterization reference](https://microsoft.github.io/fabric-cicd/latest/how_to/parameterization/) — the `find_replace` and dynamic variable rules
+- [Configuration deployment](https://microsoft.github.io/fabric-cicd/latest/how_to/config_deployment/) — the `config.yml` reference
+- [Parameterization](https://microsoft.github.io/fabric-cicd/latest/how_to/parameterization/) — `find_replace` and dynamic variables
 - [Item type notes](https://microsoft.github.io/fabric-cicd/latest/reference/item_types/) — per-type limitations, including Data Agent
 - [Source control, CI/CD, and ALM for Fabric data agents](https://learn.microsoft.com/en-us/fabric/data-science/data-agent-source-control)
-- [What is Microsoft Fabric Git integration?](https://learn.microsoft.com/en-us/fabric/cicd/git-integration/intro-to-git-integration)
 - [Fabric CLI](https://microsoft.github.io/fabric-cli/)

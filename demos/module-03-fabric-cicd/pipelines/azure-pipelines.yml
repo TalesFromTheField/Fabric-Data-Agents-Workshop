@@ -1,23 +1,26 @@
 # =============================================================================
 # Azure DevOps Pipelines - deploy Fabric items with fabric-cicd
 #
-# Assumes your Fabric workspace is connected to this Azure Repos repository
-# through Fabric Git integration, so the workspace folder is committed here.
+# Runs `deploy.py`, which calls the fabric-cicd Python library. Target
+# workspaces, item types, and the parameter file all come from config.yml, so
+# this pipeline stays thin.
+#
+# In a real setup, point config.yml's repository_directory at the folder that
+# Fabric Git integration commits, rather than the bundled sample-workspace.
 #
 # One-time setup:
 #   1. Create an ARM service connection in Project Settings > Service
-#      connections. Note its name and set it as the `serviceConnection` variable.
-#   2. Grant that service connection's identity Contributor or Admin on the
-#      target Fabric workspace.
-#   3. Enable Fabric tenant setting "Service principals can use Fabric APIs".
-#   4. Create Environments named PPE and PROD if you want approval gates.
+#      connections, and set its name in the `serviceConnection` variable.
+#   2. Grant that identity Contributor or Admin on the target Fabric workspaces.
+#   3. Enable the Fabric tenant setting "Service principals can use Fabric APIs".
+#   4. Create Environments named TEST and PROD to attach approval gates.
 #
 # The AzureCLI@2 task establishes an `az login` session, which
 # AzureCliCredential then picks up - no secrets are handled in the script.
 #
 # Alternative: the Azure DevOps Pipelines extension for Fabric provides native
-# tasks that run Fabric CLI commands, which shells out to fabric-cicd for
-# deployment. Use it if you prefer tasks over a Python step.
+# tasks that run Fabric CLI commands, which shell out to fabric-cicd. See
+# ../fabric-cli/ for that style of deployment.
 # =============================================================================
 
 trigger:
@@ -25,8 +28,7 @@ trigger:
     include: [main]
   paths:
     include:
-      - workspace/*
-      - demos/module-03-fabric-cicd/ci_deploy.py
+      - demos/module-03-fabric-cicd/*
 
 pool:
   vmImage: ubuntu-latest
@@ -35,15 +37,14 @@ variables:
   # fabric-cicd advertises 3.9 support but does not import on it.
   pythonVersion: "3.12"
   serviceConnection: "fabric-deployment"
-  repositoryDirectory: "$(Build.SourcesDirectory)/workspace"
-  itemTypes: "Lakehouse,Notebook,SemanticModel,DataAgent"
+  demoDirectory: "demos/module-03-fabric-cicd"
 
 stages:
-  - stage: PPE
-    displayName: Deploy to PPE
+  - stage: TEST
+    displayName: Deploy to TEST
     jobs:
-      - deployment: deploy_ppe
-        environment: PPE
+      - deployment: deploy_test
+        environment: TEST
         strategy:
           runOnce:
             deploy:
@@ -54,32 +55,35 @@ stages:
                   inputs:
                     versionSpec: $(pythonVersion)
 
-                - script: pip install -r demos/module-03-fabric-cicd/requirements.txt
+                - script: pip install -r requirements.txt
+                  workingDirectory: $(demoDirectory)
                   displayName: Install fabric-cicd
 
                 - task: AzureCLI@2
-                  displayName: Deploy to Fabric (PPE)
+                  displayName: Inspect (no API calls)
                   inputs:
                     azureSubscription: $(serviceConnection)
                     scriptType: bash
                     scriptLocation: inlineScript
-                    inlineScript: python demos/module-03-fabric-cicd/ci_deploy.py
-                  env:
-                    FABRIC_WORKSPACE_ID: $(FABRIC_WORKSPACE_ID_PPE)
-                    FABRIC_ENVIRONMENT: PPE
-                    FABRIC_REPOSITORY_DIRECTORY: $(repositoryDirectory)
-                    FABRIC_ITEM_TYPES: $(itemTypes)
-                    FABRIC_UNPUBLISH_ORPHANS: "false"
-                    # SYSTEM_DEBUG is set when you queue a build with diagnostics.
-                    FABRIC_DEBUG: $(System.Debug)
+                    workingDirectory: $(demoDirectory)
+                    inlineScript: python deploy.py inspect --environment TEST
+
+                - task: AzureCLI@2
+                  displayName: Deploy to Fabric (TEST)
+                  inputs:
+                    azureSubscription: $(serviceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    workingDirectory: $(demoDirectory)
+                    inlineScript: python deploy.py deploy --environment TEST
 
   - stage: PROD
     displayName: Deploy to PROD
-    dependsOn: PPE
+    dependsOn: TEST
     condition: succeeded()
     jobs:
       - deployment: deploy_prod
-        # Attach approvals/checks to this Environment in the Azure DevOps UI.
+        # Attach approvals and checks to this Environment in the Azure DevOps UI.
         environment: PROD
         strategy:
           runOnce:
@@ -91,7 +95,8 @@ stages:
                   inputs:
                     versionSpec: $(pythonVersion)
 
-                - script: pip install -r demos/module-03-fabric-cicd/requirements.txt
+                - script: pip install -r requirements.txt
+                  workingDirectory: $(demoDirectory)
                   displayName: Install fabric-cicd
 
                 - task: AzureCLI@2
@@ -100,11 +105,5 @@ stages:
                     azureSubscription: $(serviceConnection)
                     scriptType: bash
                     scriptLocation: inlineScript
-                    inlineScript: python demos/module-03-fabric-cicd/ci_deploy.py
-                  env:
-                    FABRIC_WORKSPACE_ID: $(FABRIC_WORKSPACE_ID_PROD)
-                    FABRIC_ENVIRONMENT: PROD
-                    FABRIC_REPOSITORY_DIRECTORY: $(repositoryDirectory)
-                    FABRIC_ITEM_TYPES: $(itemTypes)
-                    FABRIC_UNPUBLISH_ORPHANS: "false"
-                    FABRIC_DEBUG: $(System.Debug)
+                    workingDirectory: $(demoDirectory)
+                    inlineScript: python deploy.py deploy --environment PROD

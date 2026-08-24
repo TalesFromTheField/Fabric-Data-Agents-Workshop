@@ -1,0 +1,201 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/dataSource/1.0.0/schema.json",
+  "artifactId": "22222222-2222-2222-2222-222222222222",
+  "workspaceId": "11111111-1111-1111-1111-111111111111",
+  "dataSourceInstructions": "Grain: FactSales is one row per order line.\nJoin FactSales.ProductKey to DimProduct.ProductKey, and FactSales.CustomerKey to DimCustomer.CustomerKey.\nUse OrderDate for time filters; ShipDate is frequently null and must not be used for period reporting.\nCountry values are full names, not ISO codes - filter with LIKE '%United States%'.",
+  "displayName": "ContosoSales",
+  "type": "data_warehouse",
+  "userDescription": null,
+  "metadata": {},
+  "elements": [
+    {
+      "id": "ff6ac854-8b91-5f38-bfca-a425238bd2ee",
+      "is_selected": false,
+      "display_name": "Schemas",
+      "type": "schema_grouping",
+      "description": null,
+      "children": [
+        {
+          "id": "d5be30c5-a7f5-5597-ab4a-afa6da65c6a1",
+          "is_selected": false,
+          "display_name": "dbo",
+          "type": "warehouse_tables.schema",
+          "description": null,
+          "children": [
+            {
+              "id": "e405f095-548a-54d1-9ed9-b8a711a322b5",
+              "is_selected": false,
+              "display_name": "Tables",
+              "type": "table_grouping",
+              "description": null,
+              "children": [
+                {
+                  "id": "26915925-4bd8-5f1e-99a3-805915d27818",
+                  "is_selected": true,
+                  "display_name": "FactSales",
+                  "type": "warehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "3f861d9d-0600-5f5b-aadf-1c3e9b7f9c82",
+                      "is_selected": true,
+                      "display_name": "SalesOrderNumber",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    },
+                    {
+                      "id": "75377be4-91b6-58d3-829a-34225f5eacce",
+                      "is_selected": true,
+                      "display_name": "OrderDate",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "date",
+                      "children": []
+                    },
+                    {
+                      "id": "90b8761e-66e8-5980-9ea2-0081873499dc",
+                      "is_selected": true,
+                      "display_name": "ShipDate",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "date",
+                      "children": []
+                    },
+                    {
+                      "id": "d83e9b39-a9de-50b6-b682-30014c033732",
+                      "is_selected": true,
+                      "display_name": "CustomerKey",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "int",
+                      "children": []
+                    },
+                    {
+                      "id": "027b8677-e86d-59c6-83b9-3768b1c16ea5",
+                      "is_selected": true,
+                      "display_name": "ProductKey",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "int",
+                      "children": []
+                    },
+                    {
+                      "id": "88347b7b-3436-59e0-8b3c-bb651f2de898",
+                      "is_selected": true,
+                      "display_name": "SalesAmount",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "decimal",
+                      "children": []
+                    },
+                    {
+                      "id": "008e7825-8950-5d03-a8d0-2f46da9fc1bd",
+                      "is_selected": true,
+                      "display_name": "OrderQuantity",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "int",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "29c2502d-a9e4-5b53-b87d-7a862ddafd6c",
+                  "is_selected": true,
+                  "display_name": "DimProduct",
+                  "type": "warehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "58a5537a-512e-5466-a545-e3f45c660d1a",
+                      "is_selected": true,
+                      "display_name": "ProductKey",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "int",
+                      "children": []
+                    },
+                    {
+                      "id": "f356574b-896b-5099-bfbf-60d897e6f4d0",
+                      "is_selected": true,
+                      "display_name": "ProductName",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    },
+                    {
+                      "id": "343f3399-e15c-52f6-88ad-8d659d2f7770",
+                      "is_selected": true,
+                      "display_name": "ProductCategory",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "ad040559-79a1-5001-b737-386cd2d30c26",
+                  "is_selected": true,
+                  "display_name": "DimCustomer",
+                  "type": "warehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "f9ce7490-3097-5add-983a-46d0a7262eed",
+                      "is_selected": true,
+                      "display_name": "CustomerKey",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "int",
+                      "children": []
+                    },
+                    {
+                      "id": "fb468fb2-821d-5423-a30b-cde5d5de8b43",
+                      "is_selected": true,
+                      "display_name": "CustomerName",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    },
+                    {
+                      "id": "74991653-75db-5e8b-9044-7bf1dcf660c5",
+                      "is_selected": true,
+                      "display_name": "CountryRegionName",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "1edb36f3-8c19-52f6-8ea5-2c054b34cc42",
+                  "is_selected": false,
+                  "display_name": "StagingSalesRaw",
+                  "type": "warehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "34ecb61b-2866-510b-ac98-46bc898969eb",
+                      "is_selected": true,
+                      "display_name": "RawPayload",
+                      "type": "warehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

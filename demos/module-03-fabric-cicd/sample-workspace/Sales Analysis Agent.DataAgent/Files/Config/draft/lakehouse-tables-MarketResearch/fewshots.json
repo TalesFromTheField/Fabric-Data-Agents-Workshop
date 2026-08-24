@@ -1,0 +1,10 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/fewShots/1.0.0/schema.json",
+  "fewShots": [
+    {
+      "id": "4b788777-7ee0-5bda-90fa-48b7a8ff6d6d",
+      "question": "What is average sentiment by product category this year?",
+      "query": "SELECT ProductCategory,\n       AVG(SentimentScore) AS AvgSentiment,\n       COUNT(*) AS ResponseCount\nFROM SurveyResponses\nWHERE CAST(ResponseDate AS DATE) >= DATE_TRUNC('YEAR', CURRENT_DATE())\nGROUP BY ProductCategory\nORDER BY AvgSentiment DESC;"
+    }
+  ]
+}

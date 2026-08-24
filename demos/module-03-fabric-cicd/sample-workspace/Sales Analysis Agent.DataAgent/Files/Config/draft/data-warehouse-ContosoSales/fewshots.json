@@ -1,0 +1,15 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/fewShots/1.0.0/schema.json",
+  "fewShots": [
+    {
+      "id": "568daffa-a1a7-51eb-a5d3-ea56e5e332fc",
+      "question": "What were total sales by product category last calendar year?",
+      "query": "SELECT p.ProductCategory,\n       SUM(f.SalesAmount) AS TotalSales\nFROM FactSales f\nJOIN DimProduct p ON f.ProductKey = p.ProductKey\nWHERE YEAR(f.OrderDate) = YEAR(GETDATE()) - 1\nGROUP BY p.ProductCategory\nORDER BY TotalSales DESC;"
+    },
+    {
+      "id": "b23bf4f9-8477-508a-9383-237cd19a4ce6",
+      "question": "Which countries grew fastest year over year?",
+      "query": "WITH yearly AS (\n    SELECT c.CountryRegionName,\n           YEAR(f.OrderDate) AS CalendarYear,\n           SUM(f.SalesAmount) AS SalesAmount\n    FROM FactSales f\n    JOIN DimCustomer c ON f.CustomerKey = c.CustomerKey\n    GROUP BY c.CountryRegionName, YEAR(f.OrderDate)\n)\nSELECT CountryRegionName,\n       CalendarYear,\n       SalesAmount,\n       LAG(SalesAmount) OVER (PARTITION BY CountryRegionName ORDER BY CalendarYear)\n           AS PriorYearSales\nFROM yearly\nORDER BY CountryRegionName, CalendarYear;"
+    }
+  ]
+}
