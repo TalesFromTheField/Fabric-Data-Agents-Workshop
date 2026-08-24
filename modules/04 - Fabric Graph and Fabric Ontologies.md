@@ -42,8 +42,6 @@ You can answer these questions with joins, but the query gets ugly fast because 
 
 For data agents, this matters because Fabric already supports ontologies as a data source. That means the agent can use an ontology alongside lakehouses, warehouses, semantic models, mirrored databases, and KQL databases. The agent still runs under the user's permissions and remains read-only, but the ontology gives it a more business-aware route through the data.
 
-<p><a href="https://youtu.be/7ccFIUfjiIc"><img src="https://img.youtube.com/vi/7ccFIUfjiIc/0.jpg" height = 200></a></p>
-
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Identify questions that need a graph</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
@@ -83,8 +81,6 @@ A practical graph design for agent scenarios should include:
 
 If the model cannot explain the path in English, the agent probably should not explain the answer to a user yet.
 
-<p><a href="https://youtu.be/yCD8-qAIT2I"><img src="https://img.youtube.com/vi/yCD8-qAIT2I/0.jpg" height = 200></a></p>
-
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Convert the ontology map into a graph design</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
@@ -115,8 +111,6 @@ When you add an ontology to a data agent, treat it with the same discipline as a
 - Test questions that require the ontology and questions that should route somewhere else.
 
 This is also where permissions matter. The data agent does not magically bypass access controls because the source is more semantic. Users still need read access to the data source, and downstream answers still respect Fabric governance.
-
-<p><a href="https://youtu.be/YJu9NQB3MuU"><img src="https://img.youtube.com/vi/YJu9NQB3MuU/0.jpg" height = 200></a></p>
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Add ontology routing guidance to the agent</b></p>
 
@@ -149,8 +143,6 @@ For workshop scenarios, use three repeatable demo patterns:
 
 The answer should include the path. If the agent says "Supplier A affects Region B," ask it to explain how. The explanation is what tells you whether the model reasoned over the graph or guessed from nearby labels.
 
-<p><a href="https://youtu.be/1OOe9-EteL0"><img src="https://img.youtube.com/vi/1OOe9-EteL0/0.jpg" height = 200></a></p>
-
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Test a multi-hop impact question</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
@@ -175,7 +167,6 @@ Validate whether the model can answer and explain a connected-data question.
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-end-to-end-tutorial">Fabric data agent scenario</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate your data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-tenant-settings">Fabric data agent tenant settings</a></li>
-  <li><a href="https://www.youtube.com/@Tales-from-the-Field">Tales from the Field YouTube channel</a></li>
 </ul>
 
 Congratulations! You have completed this module on Fabric Graph &amp; Fabric Ontologies. You now have a starter pattern for relationship traversal, dependency analysis, and multi-hop reasoning that can feed the extension scenarios in the next modules.
