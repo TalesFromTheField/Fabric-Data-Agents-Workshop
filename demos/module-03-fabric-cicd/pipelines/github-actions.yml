@@ -1,0 +1,74 @@
+# =============================================================================
+# GitHub Actions - deploy Fabric items with fabric-cicd
+#
+# Assumes your Fabric workspace is connected to this repository through Fabric
+# Git integration, so the workspace folder is committed here. This workflow does
+# not export anything - it deploys what Fabric already committed.
+#
+# One-time setup:
+#   1. Register an Entra app (service principal) and grant it Contributor or
+#      Admin on the target Fabric workspace.
+#   2. Configure federated credentials for OIDC (no client secret needed):
+#      https://learn.microsoft.com/entra/workload-id/workload-identity-federation
+#   3. Add repository secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID,
+#      AZURE_SUBSCRIPTION_ID, and one workspace ID per environment.
+#   4. Enable Fabric tenant setting "Service principals can use Fabric APIs".
+#
+# Reminder: Fabric data agents support service principals for ALM only. A
+# service principal can deploy an agent; it cannot query one.
+# =============================================================================
+
+name: Deploy Fabric items
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "workspace/**"
+      - "demos/module-03-fabric-cicd/ci_deploy.py"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        options: [PPE, PROD]
+        default: PPE
+
+permissions:
+  id-token: write # required for OIDC login
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'PPE' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # fabric-cicd advertises 3.9 support but does not import on it.
+          python-version: "3.12"
+
+      - name: Install fabric-cicd
+        run: pip install -r demos/module-03-fabric-cicd/requirements.txt
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Fabric
+        env:
+          FABRIC_WORKSPACE_ID: ${{ secrets.FABRIC_WORKSPACE_ID }}
+          FABRIC_ENVIRONMENT: ${{ inputs.environment || 'PPE' }}
+          FABRIC_REPOSITORY_DIRECTORY: ${{ github.workspace }}/workspace
+          FABRIC_ITEM_TYPES: Lakehouse,Notebook,SemanticModel,DataAgent
+          # Deleting items is opt-in. Turn this on only when you are confident
+          # the repository is the complete source of truth for the workspace.
+          FABRIC_UNPUBLISH_ORPHANS: "false"
+          FABRIC_DEBUG: ${{ runner.debug == '1' }}
+        run: python demos/module-03-fabric-cicd/ci_deploy.py

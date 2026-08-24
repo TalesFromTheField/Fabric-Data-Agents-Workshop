@@ -1,0 +1,10 @@
+# Module 03 CI/CD demo dependencies.
+#
+# Requires Python 3.10 or newer. fabric-cicd 1.3.0 advertises Python 3.9 support
+# but fails to import on 3.9 (it uses `X | None` annotations that 3.9 evaluates
+# at runtime). macOS ships 3.9 as the system Python, so create a virtual
+# environment with a newer interpreter.
+
+fabric-cicd>=1.3.0
+azure-identity>=1.25.0
+requests>=2.32.3

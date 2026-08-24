@@ -1,0 +1,11 @@
+# Everything the demo generates at runtime. The exported workspace folder is a
+# copy of live Fabric items - regenerate it, don't commit it.
+workspace/
+.verify/
+.demo-state.json
+
+# Local Python environment
+.venv/
+venv/
+__pycache__/
+*.pyc
