@@ -45,8 +45,8 @@ Fabric IQ elevates enterprise data into business language so people and AI agent
 Fabric IQ consists of several complementary capabilities that work together:
 
 1. Power BI Semantic Model
-2. Ontology
-3. Graph
+2. Graph
+3. Ontology
 4. Data Agent
 5. Operations Agent
 6. Plan
@@ -82,6 +82,30 @@ Semantic models create a trusted source for analytics and reporting and ensure u
 
 ---
 
+# Graph
+
+Graph provides a representation of connected business information.
+
+Graph enables:
+
+- Relationship traversal
+- Dependency analysis
+- Impact analysis
+- Connected reasoning
+- Multi-hop exploration
+
+Graph works closely with Ontology by visualizing and traversing business relationships defined within the ontology.
+
+![Graph nodes and edge](https://learn.microsoft.com/en-us/fabric/graph/media/quickstart/nodes-edge.png)
+
+### Example Questions
+
+- Which customers are connected to a delayed shipment?
+- What upstream systems are affected by an outage?
+- How is an operational issue related to a business outcome?
+
+---
+
 # Ontology
 
 An Ontology represents the business using shared definitions, properties, and relationships.
@@ -113,30 +137,6 @@ Ontology creates a shared business vocabulary used by people, applications, and 
 - Which customers are impacted by delayed shipments?
 - Which products belong to a specific supply chain?
 - Which assets support a given business process?
-
----
-
-# Graph
-
-Graph provides a representation of connected business information.
-
-Graph enables:
-
-- Relationship traversal
-- Dependency analysis
-- Impact analysis
-- Connected reasoning
-- Multi-hop exploration
-
-Graph works closely with Ontology by visualizing and traversing business relationships defined within the ontology. 
-
-![Graph nodes and edge](https://learn.microsoft.com/en-us/fabric/graph/media/quickstart/nodes-edge.png)
-
-### Example Questions
-
-- Which customers are connected to a delayed shipment?
-- What upstream systems are affected by an outage?
-- How is an operational issue related to a business outcome?
 
 ---
 
@@ -246,6 +246,10 @@ Provides trusted metrics such as:
 - Product loss
 - SLA attainment
 
+### Graph
+
+Connects those concepts together through relationships.
+
 ### Ontology
 
 Defines business concepts such as:
@@ -256,10 +260,6 @@ Defines business concepts such as:
 - Route
 - Facility
 - Sensor
-
-### Graph
-
-Connects those concepts together through relationships.
 
 ### Data Agent
 
@@ -303,8 +303,8 @@ Fabric IQ provides the business intelligence layer that enables data, analytics,
 The core components of Fabric IQ are:
 
 - Power BI Semantic Models
-- Ontologies
 - Graph
+- Ontologies
 - Data Agents
 - Operations Agents
 - Plan

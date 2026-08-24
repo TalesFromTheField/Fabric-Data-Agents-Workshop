@@ -864,4 +864,4 @@ Two habits tie the list together. First, **tune from evidence** - keep a benchma
 
 Congratulations! You have completed this Module. You can now tune a data agent with agent-level instructions and example queries, write data source instructions that produce correct queries, diagnose and fix data source routing across multiple sources, share an agent under the right permission model while respecting RLS and CLS, and manage an agent's configuration through Git and deployment pipelines.
 
-If you understand the concepts here and have completed all of the Activities, you can [proceed to the next Module](04%20-%20Data%20Modeling%20for%20AI%20and%20Ontologies.md).
+If you understand the concepts here and have completed all of the Activities, you can [proceed to the next Module](04%20-%20Fabric%20Graph%20and%20Fabric%20Ontologies.md).

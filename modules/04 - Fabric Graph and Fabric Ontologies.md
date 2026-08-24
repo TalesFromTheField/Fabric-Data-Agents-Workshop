@@ -6,7 +6,7 @@
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/textbubble.png"> <h2>05 - Fabric Graph &amp; Fabric Ontologies</h2>
+<img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/textbubble.png"> <h2>04 - Fabric Graph &amp; Fabric Ontologies</h2>
 
 In this module you'll cover how Fabric Graph and Fabric ontologies work together to reason across connected business information. The focus is relationship traversal: finding dependency chains, ownership paths, upstream and downstream impact, and the "how did we get here?" questions that are awkward to answer from one table at a time.
 
@@ -20,16 +20,16 @@ You'll cover these topics in the module:
 
 <dl>
 
-  <dt><a href="#5-1">5.1 - Why Connected Data Changes the Question</a></dt>
-  <dt><a href="#5-2">5.2 - Nodes, Edges, and Business Relationships</a></dt>
-  <dt><a href="#5-3">5.3 - Fabric Ontologies as an Agent Source</a></dt>
-  <dt><a href="#5-4">5.4 - Multi-Hop Reasoning, Dependency, and Impact Analysis</a></dt>
+  <dt><a href="#4-1">4.1 - Why Connected Data Changes the Question</a></dt>
+  <dt><a href="#4-2">4.2 - Nodes, Edges, and Business Relationships</a></dt>
+  <dt><a href="#4-3">4.3 - Fabric Ontologies as an Agent Source</a></dt>
+  <dt><a href="#4-4">4.4 - Multi-Hop Reasoning, Dependency, and Impact Analysis</a></dt>
 
 </dl>
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="5-1"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.1 - Why Connected Data Changes the Question</h2>
+<h2 id="4-1"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">4.1 - Why Connected Data Changes the Question</h2>
 
 Some questions are not really about rows. They are about paths.
 
@@ -52,7 +52,7 @@ Separate simple lookup questions from connected-data questions so you know where
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Start with the business questions from Module 04.
+1. Start with the business questions from your workshop scenario.
 2. Mark each question as lookup, aggregation, relationship, dependency, impact, or path.
 3. For every relationship, dependency, impact, or path question, list the entities involved.
 4. Draw the shortest relationship path that would answer each question.
@@ -61,7 +61,7 @@ Separate simple lookup questions from connected-data questions so you know where
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="5-2"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.2 - Nodes, Edges, and Business Relationships</h2>
+<h2 id="4-2"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">4.2 - Nodes, Edges, and Business Relationships</h2>
 
 Graph modeling changes the center of gravity. Instead of starting with tables, start with:
 
@@ -89,11 +89,11 @@ If the model cannot explain the path in English, the agent probably should not e
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Use the Module 04 ontology map as the starting point for a graph design.
+Use the graph candidate list from section 4.1 as the starting point for a graph design.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Copy the entity list from Module 04.
+1. Copy the entity list from section 4.1.
 2. Convert each entity type into a proposed node label.
 3. Convert each relationship into an edge name using a business verb.
 4. Decide whether each edge needs direction.
@@ -102,7 +102,7 @@ Use the Module 04 ontology map as the starting point for a graph design.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="5-3"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.3 - Fabric Ontologies as an Agent Source</h2>
+<h2 id="4-3"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">4.3 - Fabric Ontologies as an Agent Source</h2>
 
 Fabric data agents can use an ontology as a selected data source. That is the key connection for this workshop: the ontology is not just documentation sitting next to the system. It becomes part of the agent's answer path.
 
@@ -135,7 +135,7 @@ Create the instruction pattern that tells the data agent when ontology-backed re
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="5-4"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.4 - Multi-Hop Reasoning, Dependency, and Impact Analysis</h2>
+<h2 id="4-4"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">4.4 - Multi-Hop Reasoning, Dependency, and Impact Analysis</h2>
 
 The reason to bring graph thinking into this workshop is multi-hop reasoning. A single-hop question asks for a direct relationship: "Which products did this customer buy?" A multi-hop question follows a path: "Which suppliers could affect revenue for customers in this region if this product line is delayed?"
 
@@ -159,13 +159,13 @@ Validate whether the model can answer and explain a connected-data question.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Choose one graph candidate question from section 5.1.
+1. Choose one graph candidate question from section 4.1.
 2. Rewrite it as a direct business question a user would actually ask.
 3. Ask the question in the Fabric data agent.
 4. Ask a follow-up: "Show the relationship path you used to reach that answer."
 5. Check whether the path uses the expected entities and relationships.
 6. If the answer is wrong or vague, update the ontology terms, relationship names, or data agent instructions.
-7. Add the corrected question and expected answer to your evaluation set from Module 04.
+7. Save the corrected question and expected answer for the evaluation set you build in Module 05.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 

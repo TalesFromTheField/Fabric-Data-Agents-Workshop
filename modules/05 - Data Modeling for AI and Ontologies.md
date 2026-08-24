@@ -6,7 +6,7 @@
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/textbubble.png"> <h2>04 - Data Modeling for AI &amp; Ontologies</h2>
+<img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/textbubble.png"> <h2>05 - Data Modeling for AI &amp; Ontologies</h2>
 
 In this module you'll cover how to shape and describe data so agents and ontologies can reason over it reliably. The goal is not to make the model fancy. The goal is to make the business meaning obvious: entity types, properties, relationships, synonyms, approved calculations, and the bindings that connect business concepts to the physical tables underneath them.
 
@@ -20,16 +20,16 @@ You'll cover these topics in the module:
 
 <dl>
 
-  <dt><a href="#4-1">4.1 - Why AI Needs a Data Model</a></dt>
-  <dt><a href="#4-2">4.2 - Entities, Properties, and Relationships</a></dt>
-  <dt><a href="#4-3">4.3 - Binding Business Concepts to Physical Data</a></dt>
-  <dt><a href="#4-4">4.4 - Instructions, Examples, and Evaluation</a></dt>
+  <dt><a href="#5-1">5.1 - Why AI Needs a Data Model</a></dt>
+  <dt><a href="#5-2">5.2 - Entities, Properties, and Relationships</a></dt>
+  <dt><a href="#5-3">5.3 - Binding Business Concepts to Physical Data</a></dt>
+  <dt><a href="#5-4">5.4 - Instructions, Examples, and Evaluation</a></dt>
 
 </dl>
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="4-1"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">4.1 - Why AI Needs a Data Model</h2>
+<h2 id="5-1"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.1 - Why AI Needs a Data Model</h2>
 
 Natural language feels flexible because people carry context around in their heads. Agents do not. When a user asks, "Which customers are at risk?" the data agent has to translate that sentence into a scoped, read-only query against specific data sources. Without a model, it has to infer too much: which customer table, which date range, which measure, which relationships, and what "at risk" means this week.
 
@@ -77,7 +77,7 @@ Take a small set of business questions and identify what the agent would need to
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="4-2"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">4.2 - Entities, Properties, and Relationships</h2>
+<h2 id="5-2"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.2 - Entities, Properties, and Relationships</h2>
 
 Ontologies start with the language of the business. An entity is the thing the business talks about. A property describes that thing. A relationship explains how one thing connects to another.
 
@@ -118,7 +118,7 @@ Prepare the Microsoft Learn ontology tutorial environment so you have a real ont
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="4-3"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">4.3 - Binding Business Concepts to Physical Data</h2>
+<h2 id="5-3"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.3 - Binding Business Concepts to Physical Data</h2>
 
 An ontology without bindings is a vocabulary exercise. Useful, but not enough. To help an agent answer questions, the business concepts must map back to the physical data: tables, columns, relationships, measures, and security boundaries.
 
@@ -151,7 +151,7 @@ Build the mapping table that connects business terms to the Fabric source the da
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="4-4"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">4.4 - Instructions, Examples, and Evaluation</h2>
+<h2 id="5-4"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.4 - Instructions, Examples, and Evaluation</h2>
 
 The model is not done when the objects exist. The agent needs guidance on how to use them.
 
@@ -200,4 +200,4 @@ Turn your model into practical data agent configuration by drafting instructions
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing">Fabric data agent sharing and permission management</a></li>
 </ul>
 
-Congratulations! You have completed this module on Data Modeling for AI &amp; Ontologies. You now have a practical map from business language to Fabric data sources, plus the instructions and evaluation patterns you need before moving into graph traversal and ontology-driven reasoning.
+Congratulations! You have completed this module on Data Modeling for AI &amp; Ontologies. You now have a practical map from business language to Fabric data sources, plus the instructions and evaluation patterns you need to build on the graph and ontology concepts introduced earlier in the workshop.
