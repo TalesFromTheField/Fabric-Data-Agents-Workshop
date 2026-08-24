@@ -29,7 +29,7 @@ You'll cover these topics in this Module on Extending Data Agents Beyond Microso
   <dt><a href="#7-5">7.5 - Data Agents &amp; Security</a></dt>
   <dt><a href="#7-6">7.6 - Model Context Protocol (MCP)</a></dt>
   <dt><a href="#7-7">7.7 - Source Control, CI/CD, and ALM</a></dt>
-  <dt><a href="#7-8">7.8 - Configuration Best Practices</a></dt>
+  <dt><a href="#7-8">7.8 - Agent Instructions, Example Queries, and Configuration Best Practices</a></dt>
 
 </dl>
 
@@ -317,13 +317,19 @@ Deployment pipelines require source and target workspaces **in the same tenant**
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="7-8"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">7.8 - Configuration Best Practices</h2>
+<h2 id="7-8"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">7.8 - Agent Instructions, Example Queries, and Configuration Best Practices</h2>
 
 We'll close by going right back to the beginning, and there's a reason.
 
 Everything in 7.1 through 7.7 is a **distribution problem**. Foundry, Copilot Studio, Teams, Python, Microsoft 365, MCP, CI/CD - all machinery for getting your agent's answers in front of more people in more places. **None of it makes the answers better.**
 
 So every one of those integrations is an amplifier. Point it at a well-configured agent and you've made a great capability available to your whole organization. Point it at a sloppy one and you've industrialized the distribution of confidently-worded wrong numbers - to executives, in Teams, at scale, with your name on it.
+
+That is why **agent instructions**, **data source instructions**, and **example queries** are not polish. They are the configuration layer that turns a generic data agent into a useful analyst. Agent instructions tell the agent how to behave and how to interpret business language. Data source instructions explain what the tables mean, how values are encoded, and when joins or source routing matter. Example queries give the agent validated patterns for the questions where "close enough" is not close enough.
+
+<p><a href="https://youtu.be/r18-STutAyE"><img src="https://img.youtube.com/vi/r18-STutAyE/0.jpg" height = 200></a></p>
+
+<p><a href="https://youtu.be/v0mD01QP5gY"><img src="https://img.youtube.com/vi/v0mD01QP5gY/0.jpg" height = 200></a></p>
 
 The full guidance is linked in the activity below. Here are the five points that change the most outcomes:
 
@@ -341,6 +347,8 @@ Nice side effect: since Foundry allows one Fabric agent per Azure AI agent, spec
 
 A prohibition tells the model which road is closed. It doesn't tell it where to drive. Replace "don't provide outdated pay information" with "always use the most recent record from the official payroll system; if it's missing, tell the employee to contact HR."
 
+Write these instructions in Markdown when the experience supports it. Headings, lists, and tables are not just easier for the author to read; they also make the intent easier to review, version, and maintain. If you cannot hand the instructions to another teammate and have them understand the business rules, the agent probably will not understand them reliably either.
+
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>4. The agent can't see row values before it queries</b></p>
 
 This is the one nobody thinks of. It's writing filters blind. Does your `State` column hold `"CA"` or `"California"`? Does `EmploymentStatus` hold `"Active"` or `"A"` or `"1"`? Every unexplained encoding is a filter the agent will guess at and get wrong. Document your value formats in the data source instructions.
@@ -357,12 +365,16 @@ For each question, the agent runs a **vector similarity search** and retrieves t
 
 And when you catch yourself writing a paragraph that describes a join, just write the join. A well-formed query is clearer than prose explaining one.
 
+Example queries are especially important when a question needs a specific join path, date window, aggregation, case statement, or source-of-truth table. The agent might not execute the sample query verbatim every time, but the validated question/query pair gives it a trusted pattern to follow for similar questions.
+
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Audit your agent, then measure the difference</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
 - Open the following Link in another tab and follow the instructions <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configuration-best-practices">Best practices for configuring your data agent</a>
 - Open the following Link in another tab and review <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configurations">Data agent configurations</a> so you know where each instruction type lives.
+- Watch <a href="https://youtu.be/r18-STutAyE">Microsoft Fabric: Data Agents Agent Instructions</a> and note how agent instructions, data source instructions, and example queries are organized in the setup experience.
+- Watch <a href="https://youtu.be/v0mD01QP5gY">Microsoft Fabric: How to use Data Agent Example Queries</a> and note why a validated query pattern can change the answer the agent returns.
 - Open the following Link in another tab and follow the instructions <a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate a Fabric data agent</a> to record a baseline against known-answer questions.
 - Now do the work: prune any source over 25 tables, document every encoded value format, group your example queries by shape and consolidate duplicates, and rephrase each example's question the way a business user would say it out loud.
 - Re-run the evaluation and compare. Don't guess whether you improved it - measure.
