@@ -53,20 +53,24 @@ For most Fabric data agent scenarios, the practical answer is to use an **ontolo
 | **Graph directly** | Useful for learning or inspecting the mechanics of connected data, including nodes, edges, keys, graph queries, and relationship traversal. It is also useful for highly technical scenarios where the team is comfortable modeling relationships explicitly and querying them with GQL. | A lower-level view of how connected data is represented and traversed. |
 | **Ontology** | Use when the goal is a business-facing model that agents, applications, and users can share. | Graph-style relationships packaged with business names, properties, data bindings, and concepts that are easier to explain, govern, and reuse. |
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Identify questions that need a graph</b></p>
+Related video: <a href="https://youtu.be/N6hkxnuOQ8k">Microsoft Fabric: Fabric IQ Graph Tutorial</a>
+
+The Microsoft Learn graph tutorial starts with the Adventure Works dataset and a new graph model. That setup is useful here because it lets you see why connected questions need a connected model before you decide whether the final business-facing implementation belongs in an ontology.
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Prepare the graph tutorial environment</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Separate simple lookup questions from connected-data questions so you know where Fabric Graph and ontologies earn their keep.
+Prepare the Adventure Works sample data and create the graph model used throughout this module.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Start with the business questions from your workshop scenario.
-2. Mark each question as lookup, aggregation, relationship, dependency, impact, or path.
-3. For every relationship, dependency, impact, or path question, list the entities involved.
-4. Draw the shortest relationship path that would answer each question.
-5. Identify which questions would be painful to answer with a single SQL, DAX, or KQL query.
-6. Put those questions into the graph candidate list.
+1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-introduction">Tutorial: Introduction to Graph in Microsoft Fabric</a> in a new browser tab.
+2. Review the tutorial scenario and the Adventure Works relationships it models.
+3. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-load-data">Tutorial: Load Sample Data for Graph in Microsoft Fabric</a> in a new browser tab, then follow the steps to download and load the sample data into a lakehouse.
+4. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-create-graph">Tutorial: Create a graph model in Microsoft Fabric</a> in a new browser tab, then follow the steps to create the graph model and load the lakehouse data into it.
+5. Write down the business entities in the sample data: customers, orders, employees, products, product categories, product subcategories, vendors, and vendor products.
+6. Keep the tutorial tabs open. The next sections use the same graph model.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -96,20 +100,20 @@ That exercise is valuable because it shows the pattern clearly. It also shows wh
 
 Graph also introduces its own query surface. Fabric Graph supports visual exploration and GQL-style querying, and those queries can be case-sensitive. That is powerful, but it is not the same thing as a business user asking a natural-language question. This is another reason ontology becomes important: it lets you keep the relationship power of Graph while presenting a higher-level business model to agents and users.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Convert the ontology map into a graph design</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Add nodes and edges to the graph</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Use the graph candidate list from section 4.1 as the starting point for a graph design.
+Create the explicit graph structure: nodes for entities and edges for the relationships between them.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Copy the entity list from section 4.1.
-2. Convert each entity type into a proposed node label.
-3. Convert each relationship into an edge name using a business verb.
-4. Decide whether each edge needs direction.
-5. Add edge properties where the relationship changes over time or carries a value.
-6. Write three example path questions the graph should answer.
+1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-model-nodes">Tutorial: Add node types to your graph</a> in a new browser tab, then follow the steps to add the Adventure Works node types.
+2. As you create each node, note the source table and key column used to identify the entity.
+3. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-model-edges">Tutorial: Add edge types to your graph</a> in a new browser tab, then follow the steps to add the relationship edges.
+4. As you create each edge, note the business verb: sells, purchases, contains, isOfType, belongsTo, and produces.
+5. Save the graph model after the nodes and edges are configured.
+6. Write one sentence explaining how each edge changes the question the graph can answer.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -131,20 +135,22 @@ When you add an ontology to a data agent, treat it with the same discipline as a
 
 This is also where permissions matter. The data agent does not magically bypass access controls because the source is more semantic. Users still need read access to the data source, and downstream answers still respect Fabric governance.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Decide whether to model with Graph or Ontology</b></p>
+The graph tutorial also shows one more modeling move: a single source table can contain more than one business concept. In the tutorial, the Employees table contains a `Country` value. You can leave country as an employee property, or you can promote it into its own `Country` node and connect employees to countries with a `livesIn` edge. That is the exact kind of modeling decision that helps explain why ontologies become valuable: the more the model starts representing business concepts, the more you want a business-facing abstraction instead of a raw graph canvas.
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Compare direct Graph modeling to ontology modeling</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Decide when the lower-level Graph experience is appropriate and when the better answer is to build an ontology that uses graph relationships underneath.
+Use the tutorial's one-table modeling step to decide when direct Graph is only teaching the mechanics and when the business-facing model should be an ontology.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Pick one relationship-heavy question from section 4.1.
-2. List the nodes and edges you would need if you modeled the question directly in Graph.
-3. List the entity types, properties, relationships, and data bindings you would need if you modeled the same question as an ontology.
-4. Decide which path is easier to explain to a business stakeholder.
-5. Decide which path is easier for a data agent to use safely.
-6. Write down the design decision: use direct Graph for technical traversal and inspection, or use Ontology for business-facing agent consumption.
+1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-model-node-edge-from-same-table">Tutorial: Create Node and Edge Types from One Source Table</a> in a new browser tab.
+2. Follow the tutorial steps to create the `Country` node and `livesIn` edge from the Employees table.
+3. Compare the two designs: country as a property on Employee versus country as its own business concept.
+4. Write down when the direct Graph model is useful for understanding the relationship.
+5. Write down how the same idea would appear in an ontology: entity type, properties, relationship, and data binding.
+6. Capture the design lesson: Graph shows the mechanics; ontology packages the same connected idea for business and agent reuse.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -164,21 +170,21 @@ The answer should include the path. If the agent says "Supplier A affects Region
 
 This is where the Graph/Ontology distinction matters most. Graph teaches you how the path is built. Ontology helps you package that path so a business user can ask about it naturally and a data agent can answer using governed business meaning.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Test a multi-hop impact question</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Query the graph visually and with GQL</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Validate whether the model can answer and explain a connected-data question.
+Use the tutorial's visual query builder and GQL examples to validate whether the graph can answer connected-data questions.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Choose one graph candidate question from section 4.1.
-2. Rewrite it as a direct business question a user would actually ask.
-3. Ask the question in the Fabric data agent.
-4. Ask a follow-up: "Show the relationship path you used to reach that answer."
-5. Check whether the path uses the expected entities and relationships.
-6. If the answer is wrong or vague, update the ontology terms, relationship names, or data agent instructions.
-7. Save the corrected question and expected answer for the evaluation set you build in Module 05.
+1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-query-builder">Tutorial: Query the Graph with the Query Builder</a> in a new browser tab, then follow the steps to visually query what products Carla Adams purchased.
+2. Observe the path: `Customer` to `Order` to `Product`.
+3. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-query-code-editor">Tutorial: Query the Graph with GQL</a> in a new browser tab, then follow the steps to run the GQL examples.
+4. Compare the visual query builder experience with the GQL code editor experience.
+5. Write down which parts are useful for a technical modeler and which parts a business user should never need to see.
+6. Translate one GQL result into a natural-language question that would be better served through an ontology-backed agent.
+7. Save that question for the ontology and data-agent work in Module 05.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -188,6 +194,14 @@ Validate whether the model can answer and explain a connected-data question.
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-end-to-end-tutorial">Fabric data agent scenario</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate your data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-tenant-settings">Fabric data agent tenant settings</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-introduction">Tutorial: Introduction to Graph in Microsoft Fabric</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-load-data">Tutorial: Load Sample Data for Graph in Microsoft Fabric</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-create-graph">Tutorial: Create a graph model in Microsoft Fabric</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-model-nodes">Tutorial: Add node types to your graph</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-model-edges">Tutorial: Add edge types to your graph</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-model-node-edge-from-same-table">Tutorial: Create Node and Edge Types from One Source Table</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-query-builder">Tutorial: Query the Graph with the Query Builder</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/graph/tutorial-query-code-editor">Tutorial: Query the Graph with GQL</a></li>
   <li><a href="https://youtu.be/N6hkxnuOQ8k">Microsoft Fabric: Fabric IQ Graph Tutorial</a></li>
 </ul>
 
