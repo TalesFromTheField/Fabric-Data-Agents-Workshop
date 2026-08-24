@@ -70,7 +70,7 @@ Yes, the path still says `aiskills`. Data agents were called AI Skills in previe
 
 You'll also need at least the `AI Developer` RBAC role in Foundry - for you and for your end users.
 
-<p><a href="https://youtu.be/7ccFIUfjiIc"><img src="https://img.youtube.com/vi/7ccFIUfjiIc/0.jpg" height = 200></a></p>
+<p><a href="https://youtu.be/nqUt-wCYY2M"><img src="https://img.youtube.com/vi/nqUt-wCYY2M/0.jpg" height = 200></a></p>
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Add your data agent to a Foundry agent</b></p>
 
