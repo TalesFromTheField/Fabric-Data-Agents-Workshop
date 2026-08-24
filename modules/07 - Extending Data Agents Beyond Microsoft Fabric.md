@@ -28,8 +28,7 @@ You'll cover these topics in this Module on Extending Data Agents Beyond Microso
   <dt><a href="#7-4">7.4 - Microsoft 365 Copilot</a></dt>
   <dt><a href="#7-5">7.5 - Data Agents &amp; Security</a></dt>
   <dt><a href="#7-6">7.6 - Model Context Protocol (MCP)</a></dt>
-  <dt><a href="#7-7">7.7 - Source Control, CI/CD, and ALM</a></dt>
-  <dt><a href="#7-8">7.8 - Agent Instructions, Example Queries, and Configuration Best Practices</a></dt>
+  <dt><a href="#7-7">7.7 - Skills for Fabric with GitHub Copilot and VS Code</a></dt>
 
 </dl>
 
@@ -264,129 +263,58 @@ One compliance note - with a named integration you know whose data policy applie
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="7-7"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">7.7 - Source Control, CI/CD, and ALM</h2>
+<h2 id="7-7"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">7.7 - Skills for Fabric with GitHub Copilot and VS Code</h2>
 
-Here's the question that separates a demo from a production system: **where does your data agent's configuration actually live?**
+Everything so far has been about **consuming a published data agent**. Skills for Fabric are different. They are not another chat surface for a published agent. They are reusable instruction sets that teach AI coding tools how to work with Microsoft Fabric workloads from a developer environment.
 
-If the honest answer is "in the workspace, where Dave configured it," you don't have a data agent. You have an expensive tribal knowledge artifact with a single point of failure named Dave. Someone edits the AI instructions on a Thursday, answers get worse on Friday, and there's no way to see what changed or roll it back.
+Think of Skills for Fabric as the bridge between Fabric and AI-assisted development. GitHub Copilot, VS Code Copilot, Cursor, Claude Code, and similar tools do not automatically know Fabric REST APIs, T-SQL patterns, KQL patterns, notebook conventions, deployment workflows, or Power BI project structures. Skills package that knowledge into `SKILL.md` files, helper scripts, and resources so the coding agent can act like a Fabric-aware teammate.
 
-The fix is the same one it's always been: source control, and promotion through environments. Fabric supports both, currently in **preview**.
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Skills tell the agent what to do; tools let it do it</b></p>
 
-- **Git integration** syncs a workspace with Azure DevOps or GitHub. Each data agent lives in its own folder, with its schema selection, AI instructions, data source instructions, and example queries stored as structured files. You get diffs, history, reverts, and pull requests on your agent exactly like any other artifact.
-- **Deployment pipelines** promote agents between workspaces mapped to development, test, and production.
+Skills are static guidance loaded into the AI tool's context. MCP servers and CLI tools provide live access to schemas, files, APIs, and running applications. Used together, they let a developer ask for an outcome in natural language and have the coding agent author, query, validate, and document Fabric assets.
 
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Editing the publishing description is a tracked change</b></p>
+| Layer | Role |
+| --- | --- |
+| **Skills for Fabric** | Teach the coding agent Fabric-specific APIs, syntax, patterns, and best practices |
+| **GitHub Copilot CLI / VS Code Copilot** | Provides the agent experience where the developer prompts, reviews, and iterates |
+| **MCP servers and CLIs** | Give the agent live access to Fabric, Power BI, local files, Desktop, and validation tools |
+| **Git / repository** | Holds the source-controlled Fabric project, PBIP/PBIR files, notebooks, scripts, and generated artifacts |
 
-The agent flips to **Uncommitted changes** when you alter schema selection, AI or data source instructions, example queries - or publish the agent or update its publishing description.
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Where this fits with data agents</b></p>
 
-Given how much this module leans on that description - it drives the Copilot Studio picker, the M365 `description_for_model`, and the MCP tool description - it's genuinely good news that it's versioned. When somebody "improves" the description and your agent stops getting invoked, you can diff it.
+Data agents answer governed business questions over Fabric data. Skills for Fabric help developers and analysts **build and maintain** the Fabric assets those agents depend on: lakehouses, warehouses, notebooks, eventhouses, semantic models, reports, workspace documentation, and deployment automation.
 
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Unpublished is not consumable - even in production</b></p>
+This distinction matters:
 
-This is the operational rule that trips up teams with otherwise great ALM discipline. Every channel in this module requires a **published** agent. Sitting in the production workspace is not enough.
+- Use a **Fabric data agent** when a user needs a governed answer from a published conversational analytics artifact.
+- Use **Skills for Fabric with GitHub Copilot or VS Code** when a builder needs AI assistance authoring, inspecting, querying, documenting, or improving Fabric assets.
+- Use **Power BI agentic skills** when the work moves into PBIP/PBIR semantic model and report authoring.
 
-Which creates a tension, because you also need to publish in *development* to evaluate across those same channels. Both are true, so handle it deliberately:
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Power BI Agentic and report authoring</b></p>
 
-- **Restrict publishing from development** to the people actively building and assessing the agent. Lock that workspace down so half-finished experiments don't leak.
-- **End users consume only what's published from production.** Stable, approved versions.
+The `powerbi-authoring` plugin is a separate Skills for Fabric bundle focused on Power BI authoring. It includes skills for semantic model authoring, report planning, report design, report authoring, and report management. The Power BI Report Authoring skill works against PBIR report definitions in PBIP projects, so GitHub Copilot or VS Code Copilot can help create or modify report pages, visuals, filters, formatting, and themes.
 
-Draw that line, or someone will `@`-mention your Tuesday afternoon experiment in a Teams channel full of executives.
+The important teaching point is not that Copilot "makes reports." The point is that skills constrain the agent to the right file formats, validation steps, and authoring patterns. Without skills, the agent is guessing. With skills, it has a playbook.
 
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Best practices</b></p>
-
-- Use a **dedicated branch** for agent development and merge to main after code review.
-- Keep related resources - sources, agents, notebooks, pipelines - **in the same workspace** so they promote together.
-- **Test in the test workspace** before promoting to production.
-- **Never edit the published folder directly.** Change the draft; publishing generates the rest.
-- Use **environment-agnostic configuration** rather than hardcoding environment-specific values. This is what makes merges and deployments stop hurting.
-
-Deployment pipelines require source and target workspaces **in the same tenant**. And note one preview wrinkle: the ALM documentation states service principals are supported in data agents *only* for ALM scenarios, while the SPN documentation in 7.5 covers calling a published agent with a bearer token. Both pages are current, both features are preview. Validate in your own tenant before architecting around SPN querying - and now you know to look.
-
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Put your data agent under source control</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Install and inspect Skills for Fabric</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-- Open the following Link in another tab and follow the instructions <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-source-control">Source Control, CI/CD, and ALM for Fabric data agent</a>
-- Open the following Link in another tab and follow the instructions <a href="https://learn.microsoft.com/en-us/fabric/cicd/git-integration/git-get-started?tabs=azure-devops,Azure,commit-to-git">Get started with Git integration</a>
-- Commit your agent, then go read the files in the repo. Find your AI instructions and your example queries. Once you can read these, you can review an agent change in a pull request without opening Fabric.
-- Make a change *in the repo* - edit the data source instructions in a text editor - push it, accept the update in Fabric, and confirm the agent's behavior actually changed.
-- Open the following Link in another tab and follow the instructions <a href="https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/get-started-with-deployment-pipelines?tabs=from-fabric,new-ui">Get started with deployment pipelines</a>, then build dev → test → prod and promote your agent.
-- Stretch goal: automate promotion with the <a href="https://marketplace.visualstudio.com/items?itemName=ms-fabric.fabric-devops-pipelines">Azure DevOps Pipelines extension for Fabric</a>.
+- Open the following Link in another tab and review <a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-overview">Skills for Fabric overview</a>.
+- Open the following Link in another tab and follow the instructions <a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-install">Install Skills for Fabric</a>. If you are using GitHub Copilot CLI, install the Fabric collection and, if you are working with Power BI projects, the `powerbi-authoring` plugin.
+- Open the following Link in another tab and review <a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-discover">Discover available Skills for Fabric</a>. List the installed skills in your AI coding tool.
+- If you are using VS Code Copilot, review how VS Code detects skills from the local Copilot customization folder and confirm that the skill list is available in Chat.
+- Open the following Link in another tab and review <a href="https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-agentic-overview">Power BI Agentic overview</a>.
+- Open the following Link in another tab and review <a href="https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-report-authoring-skill-overview">Power BI Report Authoring skill</a>.
+- Try one safe read-only prompt first, such as documenting a Fabric workspace or listing available tables in a lakehouse. Confirm the agent explains the plan before you allow it to make changes.
 
 > If you only reviewed the documentation in this Activity, ensure you bookmark each of these references and then perform the Activity in full once you do have your deployment.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="7-8"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">7.8 - Agent Instructions, Example Queries, and Configuration Best Practices</h2>
+<h2 id="choosing-between-them"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">Choosing Between Them</h2>
 
-We'll close by going right back to the beginning, and there's a reason.
-
-Everything in 7.1 through 7.7 is a **distribution problem**. Foundry, Copilot Studio, Teams, Python, Microsoft 365, MCP, CI/CD - all machinery for getting your agent's answers in front of more people in more places. **None of it makes the answers better.**
-
-So every one of those integrations is an amplifier. Point it at a well-configured agent and you've made a great capability available to your whole organization. Point it at a sloppy one and you've industrialized the distribution of confidently-worded wrong numbers - to executives, in Teams, at scale, with your name on it.
-
-That is why **agent instructions**, **data source instructions**, and **example queries** are not polish. They are the configuration layer that turns a generic data agent into a useful analyst. Agent instructions tell the agent how to behave and how to interpret business language. Data source instructions explain what the tables mean, how values are encoded, and when joins or source routing matter. Example queries give the agent validated patterns for the questions where "close enough" is not close enough.
-
-<p><a href="https://youtu.be/r18-STutAyE"><img src="https://img.youtube.com/vi/r18-STutAyE/0.jpg" height = 200></a></p>
-
-<p><a href="https://youtu.be/v0mD01QP5gY"><img src="https://img.youtube.com/vi/v0mD01QP5gY/0.jpg" height = 200></a></p>
-
-The full guidance is linked in the activity below. Here are the five points that change the most outcomes:
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>1. Descriptive names are no longer cosmetic</b></p>
-
-The agent reads your schema to understand your business. `Table1` and `col1` tell it nothing; `CustomerOrders` and `order_submission_date` tell it a great deal. Twenty years of "we'll rename it later" finally has a price tag attached.
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>2. Specialize, and keep it under 25 tables</b></p>
-
-Build agents focused on a domain rather than one agent to rule them all - narrow scope means targeted instructions and less ambiguity. Within each source, **limit to 25 tables or fewer** for optimal results. Write that number down; it skips the entire "I connected the whole warehouse and it got worse" conversation.
-
-Nice side effect: since Foundry allows one Fabric agent per Azure AI agent, specialized agents turn that constraint into an architecture.
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>3. Say what to do, not just what not to do</b></p>
-
-A prohibition tells the model which road is closed. It doesn't tell it where to drive. Replace "don't provide outdated pay information" with "always use the most recent record from the official payroll system; if it's missing, tell the employee to contact HR."
-
-Write these instructions in Markdown when the experience supports it. Headings, lists, and tables are not just easier for the author to read; they also make the intent easier to review, version, and maintain. If you cannot hand the instructions to another teammate and have them understand the business rules, the agent probably will not understand them reliably either.
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>4. The agent can't see row values before it queries</b></p>
-
-This is the one nobody thinks of. It's writing filters blind. Does your `State` column hold `"CA"` or `"California"`? Does `EmploymentStatus` hold `"Active"` or `"A"` or `"1"`? Every unexplained encoding is a filter the agent will guess at and get wrong. Document your value formats in the data source instructions.
-
-The same goes for your business vocabulary - define "fiscal year," "quarter," "SKU," "NPS." If you've ever watched two departments argue for forty minutes before realizing they defined "active customer" differently, you already know which terms to write down.
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>5. Only three example queries make it into any prompt</b></p>
-
-For each question, the agent runs a **vector similarity search** and retrieves the **top 3 most relevant example queries** into its augmented prompt. That has real design consequences:
-
-- **Coverage beats quantity.** Twenty near-identical examples burn all three slots on one idea.
-- **Retrieval is by similarity to the question**, so the `question` text matters as much as the query. Phrase it the way your users actually talk.
-- **Spread examples across query *shapes*** - filtering, joins, aggregations, date handling - so whatever gets asked, the three that surface are useful.
-
-And when you catch yourself writing a paragraph that describes a join, just write the join. A well-formed query is clearer than prose explaining one.
-
-Example queries are especially important when a question needs a specific join path, date window, aggregation, case statement, or source-of-truth table. The agent might not execute the sample query verbatim every time, but the validated question/query pair gives it a trusted pattern to follow for similar questions.
-
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Audit your agent, then measure the difference</b></p>
-
-<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
-
-- Open the following Link in another tab and follow the instructions <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configuration-best-practices">Best practices for configuring your data agent</a>
-- Open the following Link in another tab and review <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configurations">Data agent configurations</a> so you know where each instruction type lives.
-- Watch <a href="https://youtu.be/r18-STutAyE">Microsoft Fabric: Data Agents Agent Instructions</a> and note how agent instructions, data source instructions, and example queries are organized in the setup experience.
-- Watch <a href="https://youtu.be/v0mD01QP5gY">Microsoft Fabric: How to use Data Agent Example Queries</a> and note why a validated query pattern can change the answer the agent returns.
-- Open the following Link in another tab and follow the instructions <a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate a Fabric data agent</a> to record a baseline against known-answer questions.
-- Now do the work: prune any source over 25 tables, document every encoded value format, group your example queries by shape and consolidate duplicates, and rephrase each example's question the way a business user would say it out loud.
-- Re-run the evaluation and compare. Don't guess whether you improved it - measure.
-- Commit all of it to Git per section 7.7, so the tuning is versioned and reviewable.
-
-> If you only reviewed the documentation in this Activity, ensure you bookmark each of these references and then perform the Activity in full once you do have your deployment.
-
-<p style="border-bottom: 1px solid lightgrey;"></p>
-
-<h2 id="7-9"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">Choosing Between Them</h2>
-
-Five doors, one agent. The short version to steal for your architecture review:
+Several doors, different jobs. The short version to steal for your architecture review:
 
 | If you need... | Use | Watch out for |
 | --- | --- | --- |
@@ -396,8 +324,9 @@ Five doors, one agent. The short version to steal for your architecture review:
 | Broad reach to business users already in Teams | **Microsoft 365 Copilot** | The M365 orchestrator reshapes responses; per-user licensing |
 | Any MCP-speaking client, or a future-proof endpoint | **MCP server** | Must follow the MCP handshake; the client's data policy applies |
 | Unattended jobs and pipelines | **Service principal** | No managed identity support; not supported with KQL sources |
+| AI-assisted Fabric development from a coding tool | **Skills for Fabric with GitHub Copilot / VS Code** | This builds and maintains Fabric assets; it is not another published data-agent chat surface |
 
-True of all of them: publish the agent, write a genuinely good description, keep everyone on one tenant, enable the tenant switches, and let Entra ID carry the security. Do those five things and the rest is mostly clicking - and once it works, get it into Git so it stays working.
+True of the data-agent consumption paths: publish the agent, write a genuinely good description, keep everyone on one tenant, enable the tenant switches, and let Entra ID carry the security. For Skills for Fabric, the equivalent discipline is different: install the right skills, use the right tool permissions, review the plan before execution, and keep the generated Fabric project artifacts in source control.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -406,13 +335,16 @@ True of all of them: publish the agent, write a genuinely good description, keep
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent">What is the Fabric data agent?</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-tenant-settings">Fabric data agent tenant settings</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing">Fabric data agent sharing and permission management</a></li>
-  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configuration-best-practices">Best practices for configuring your data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate a Fabric data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-copilot-powerbi">Consume a data agent from Copilot in Power BI</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/fabric-data-agent-foundry-observability">Observe a Fabric data agent with Microsoft Foundry</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-purview-governance">Audit data agent interactions with Microsoft Purview</a></li>
-  <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-source-control">Source control, CI/CD, and ALM for Fabric data agents</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-end-to-end-tutorial">Fabric data agent end-to-end tutorial</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-overview">Skills for Fabric overview</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-install">Install Skills for Fabric</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-discover">Discover available Skills for Fabric</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-agentic-overview">Power BI Agentic overview</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-report-authoring-skill-overview">Power BI Report Authoring skill</a></li>
   <li><a href="https://www.youtube.com/@Tales-from-the-Field">Tales from the Field on YouTube</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/fundamentals/whats-new">As always, this is a fast-changing technology, so ensure you check this reference to find the latest improvements.</a></li>
 </ul>
