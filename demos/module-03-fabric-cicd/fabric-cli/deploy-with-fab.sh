@@ -26,9 +26,22 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG="${SCRIPT_DIR}/../config.yml"
 
 command -v fab >/dev/null 2>&1 || {
-    echo "ERROR: 'fab' not found. Install it with: pip install ms-fabric-cli" >&2
+    echo "ERROR: 'fab' not found." >&2
+    echo "  Install it with: pip install ms-fabric-cli   (note: NOT 'fabric-cli')" >&2
+    echo "  Requires Python 3.10-3.13. Use the demo venv: source ../.venv/bin/activate" >&2
     exit 1
 }
+
+# On Python 3.14 pip silently resolves to ms-fabric-cli 0.1.10, which has no
+# `deploy` command. Catch that here rather than failing confusingly later.
+FAB_VERSION="$(fab --version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo '0.0.0')"
+FAB_MAJOR="${FAB_VERSION%%.*}"
+if [[ "${FAB_MAJOR}" -lt 1 ]]; then
+    echo "ERROR: fab ${FAB_VERSION} is too old - 'fab deploy' needs 1.x." >&2
+    echo "  This usually means Python 3.14, which caps ms-fabric-cli at 0.1.10." >&2
+    echo "  Recreate the venv with a supported interpreter: python3.12 -m venv ../.venv" >&2
+    exit 1
+fi
 
 usage() { sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'; exit 1; }
 

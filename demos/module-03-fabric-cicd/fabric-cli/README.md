@@ -20,10 +20,24 @@ The CLI covers that surrounding ground, which makes it a useful companion:
 
 ## Setup
 
+`ms-fabric-cli` requires **Python 3.10, 3.11, 3.12, or 3.13**. Install it into the demo's virtual environment rather than globally:
+
 ```bash
+cd demos/module-03-fabric-cicd
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install ms-fabric-cli
-./deploy-with-fab.sh login
+
+fab --version                      # expect 1.7.0 or newer
+fab auth login
 ```
+
+Three things go wrong if you install it any other way:
+
+- **Python 3.14 silently installs the wrong version.** `ms-fabric-cli` 1.7.0 caps at `<3.14`, so pip does not error — it falls back to `0.1.10`, which predates `fab deploy`. Always check `fab --version` after installing. If Homebrew's `python3` is 3.14, create the venv with an explicit interpreter: `python3.12 -m venv .venv`.
+- **Homebrew Python refuses global installs** with an `externally-managed-environment` error (PEP 668). Use a virtual environment; do not reach for `--break-system-packages`.
+- **The package name is `ms-fabric-cli`, not `fabric-cli`.** `fabric-cli` on PyPI is an unrelated research project and provides no `fab` command.
+
+`fab` keeps its own credential store, separate from `az login`, so `fab auth login` is required even if the Azure CLI is already authenticated.
 
 ## Running it
 

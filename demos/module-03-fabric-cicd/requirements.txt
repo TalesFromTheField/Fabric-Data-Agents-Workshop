@@ -14,5 +14,8 @@ azure-identity>=1.25.0
 pyyaml>=6.0.2
 
 # Optional - only needed for the Fabric CLI variant in ./fabric-cli/.
-# Install separately when you want it:
+# Install it separately, and note it supports a NARROWER Python range than
+# fabric-cicd: 3.10 to 3.13 only. On Python 3.14 pip does not error, it
+# silently installs ms-fabric-cli 0.1.10, which predates `fab deploy`.
+# Always check `fab --version` afterwards.
 #   pip install ms-fabric-cli
