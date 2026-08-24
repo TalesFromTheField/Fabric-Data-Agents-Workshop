@@ -14,7 +14,7 @@ In this workshop, you'll learn how a Fabric data agent turns a plain-language qu
 
 The focus of this workshop is to understand how to design, build, govern, and operate Fabric data agents over your organization's governed data.
 
-You'll start with an introduction to Fabric IQ and its components - semantic models, ontologies, graph, data agents, operations agents, and Plan. From there you'll build your first Fabric data agent, then learn what separates a demo agent from a production one: agent and data source instructions, example queries, multi-source routing, security, and CI/CD. You'll then move into data modeling for AI, Fabric Graph and ontologies, and real-time scenarios where operations agents act on streaming data. You'll end by extending data agents beyond Microsoft Fabric, with a focus on how to extrapolate what you have learned to create other solutions for your organization.
+You'll start with an introduction to Fabric IQ and its components - semantic models, graph, ontologies, data agents, operations agents, and Plan. From there you'll build your first Fabric data agent, then learn what separates a demo agent from a production one: agent and data source instructions, example queries, multi-source routing, security, and CI/CD. You'll then move into Fabric Graph and ontologies, data modeling for AI, and real-time scenarios where operations agents act on streaming data. You'll end by extending data agents beyond Microsoft Fabric, with a focus on how to extrapolate what you have learned to create other solutions for your organization.
 
 This github README.MD file explains how the workshop is laid out, what you will learn, and the technologies you will use in this solution. To download this Lab to your local computer, click the **Clone or Download** button you see at the top right side of this page. [More about that process is here](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository).
 
@@ -42,7 +42,7 @@ The goal of this workshop is to train data and analytics professionals to determ
 The concepts and skills taught in this workshop form the starting points for:
 
     Data Engineers and Analytics Engineers, to build and govern the Fabric data estate that agents reason over, and to make that data answerable in natural language.
-    Data Architects and Solution Architects, to design the semantic models, ontologies, graph relationships, and real-time architectures that give agents their business context.
+    Data Architects and Solution Architects, to design the semantic models, graph relationships, ontologies, and real-time architectures that give agents their business context.
     Data Analysts, BI Developers, and Fabric Administrators, to consume, evaluate, secure, and operate published agents in production.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
@@ -64,7 +64,7 @@ The solution includes the following technologies - although you are not limited 
 
   <tr><td>Microsoft Fabric and OneLake</td><td>The unified SaaS analytics platform, and the single storage foundation every other service in this workshop reads from.</td></tr>
   <tr><td>Fabric Data Agent</td><td>The natural-language interface over your governed data. It selects the right data source and generates NL2SQL, NL2DAX, or NL2KQL on the student's behalf.</td></tr>
-  <tr><td>Fabric IQ</td><td>The business context layer - ontologies, graph, and Plan - that lets people and agents reason using business concepts rather than table and column names.</td></tr>
+  <tr><td>Fabric IQ</td><td>The business context layer - graph, ontologies, and Plan - that lets people and agents reason using business concepts rather than table and column names.</td></tr>
   <tr><td>Power BI Semantic Models</td><td>Trusted business measures, KPIs, and hierarchies that a data agent queries with DAX, so agent answers match the numbers already used for reporting.</td></tr>
   <tr><td>Lakehouse and Warehouse</td><td>The SQL-addressable data sources a data agent queries, and where table selection and data source instructions are applied.</td></tr>
   <tr><td>Real-Time Intelligence</td><td>Eventstreams, Eventhouse, and KQL databases for streaming and event data, along with KQL Querysets and Real-Time Dashboards.</td></tr>
@@ -118,7 +118,7 @@ This workshop uses Microsoft Fabric, Fabric IQ, and Fabric data agents, with a f
 <table style="tr:nth-child(even) {background-color: #f2f2f2;}; text-align: left; display: table; border-collapse: collapse; border-spacing: 5px; border-color: gray;">
 
   <tr><td style="background-color: Cornsilk; color: black; padding: 5px 5px;">Primary Audience:</td><td style="background-color: Cornsilk; color: black; padding: 5px 5px;">Data Engineers, Analytics Engineers, and BI Developers tasked with building and governing data in Microsoft Fabric and making that data answerable in natural language</td></tr>
-  <tr><td>Secondary Audience:</td><td> Data Architects and Solution Architects designing the semantic models, ontologies, graph relationships, and real-time architectures that AI agents reason over, along with Data Analysts and Microsoft Fabric Administrators who consume, secure, and operate published agents</td></tr>
+  <tr><td>Secondary Audience:</td><td> Data Architects and Solution Architects designing the semantic models, graph relationships, ontologies, and real-time architectures that AI agents reason over, along with Data Analysts and Microsoft Fabric Administrators who consume, secure, and operate published agents</td></tr>
   <tr><td style="background-color: Cornsilk; color: black; padding: 5px 5px;">Level: </td><td style="background-color: Cornsilk; color: black; padding: 5px 5px;"> 200 </td></tr>
   <tr><td>Type:</td><td>In-Person</td></tr>
   <tr><td style="background-color: Cornsilk; color: black; padding: 5px 5px;">Length: </td><td style="background-color: Cornsilk; color: black; padding: 5px 5px;">Full day (8 hours)</td></tr>
@@ -144,7 +144,7 @@ This is a modular workshop, and in each section, you'll learn concepts, technolo
 
   <tr><td><a href="modules/00%20-%20Pre-Requisites.md" >00 - Pre-Requisites </a></td><td> Microsoft 365 and Power BI licensing; provisioning a Microsoft Fabric capacity or trial capacity; the administrator roles you need; and creating and validating an empty Fabric workspace assigned to that capacity before class begins.</td></tr>
 
-  <tr><td style="background-color: AliceBlue; color: black;"><a href="modules/01%20-%20Introduction%20and%20Overview.md" >01 - Introduction and Overview: Fabric IQ</a></td><td style="background-color: AliceBlue; color: black;"> Why business context matters for AI, and how the Fabric IQ components - Power BI semantic models, ontologies, graph, data agents, operations agents, and Plan - combine to move an organization from data to meaning, insights, decisions, and actions.</td></tr>
+  <tr><td style="background-color: AliceBlue; color: black;"><a href="modules/01%20-%20Introduction%20and%20Overview.md" >01 - Introduction and Overview: Fabric IQ</a></td><td style="background-color: AliceBlue; color: black;"> Why business context matters for AI, and how the Fabric IQ components - Power BI semantic models, graph, ontologies, data agents, operations agents, and Plan - combine to move an organization from data to meaning, insights, decisions, and actions.</td></tr>
 
   <tr><td><a href="modules/02%20-%20Fabric%20Data%20Agents.md" >02 - Fabric Data Agents</a></td><td> What a Fabric data agent is and how it routes questions to NL2SQL, NL2DAX, and NL2KQL; prerequisites and Copilot tenant settings; creating an agent, adding data sources, and selecting tables; publishing a draft agent for consumers.</td></tr>
 
