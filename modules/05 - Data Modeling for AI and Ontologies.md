@@ -60,20 +60,21 @@ Also note an important configuration difference: data agent query examples and q
 
 <p><a href="https://youtu.be/v0mD01QP5gY"><img src="https://img.youtube.com/vi/v0mD01QP5gY/0.jpg" height = 200></a></p>
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Translate business questions into modeling requirements</b></p>
+Microsoft's ontology tutorial uses a Lakeshore Retail scenario to create entities such as stores, products, sales events, and freezer telemetry. Before you can talk about modeling choices, you need a working tutorial environment with the sample data loaded and the required Fabric items created.
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Complete Tutorial Part 0 - Introduction and Environment Setup</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Take a small set of business questions and identify what the agent would need to know before it could answer them safely and consistently.
+Prepare the Microsoft Learn ontology tutorial environment so you have a real scenario to use for the rest of this module. Do not copy the Microsoft tutorial steps into this repository; use the tutorial as the hands-on lab source.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Pick five questions a business user would ask your data agent. Use real language, not table names.
-2. For each question, write down the core noun: customer, order, product, region, asset, incident, employee, or another entity.
-3. Write down the measures or facts needed to answer the question.
-4. Mark any phrase that requires a business definition, such as active, late, high value, current quarter, at risk, or compliant.
-5. Identify the source that should answer each question: lakehouse, warehouse, semantic model, KQL database, mirrored database, or ontology.
-6. Save this list. You will reuse it when you define instructions, example queries, and evaluation tests.
+1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-0-introduction">Tutorial Part 0: Introduction and Environment Setup</a> in a new browser tab.
+2. Follow the tutorial steps to choose either the semantic model path or the OneLake path.
+3. Prepare the Lakeshore Retail sample data, lakehouse, semantic model if selected, and eventhouse items described in the tutorial.
+4. When the tutorial environment is ready, write down which Fabric items you created and which data source each one represents.
+5. Keep the tutorial tab open. Section 5.2 continues with Part 1 of the same tutorial.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -100,21 +101,21 @@ For an AI-ready model, define:
 
 Do not start by modeling everything. Start with the questions the agent must answer, then model the entities and relationships those questions actually need. Data models created by committee tend to become museums. Agents need maps.
 
-Microsoft's ontology tutorial uses a Lakeshore Retail scenario to create entities such as stores, products, sales events, and freezer telemetry. That scenario is useful here because it shows both paths students need to understand: generating an ontology from a Power BI semantic model and building one directly from OneLake data.
+The Lakeshore Retail scenario is useful here because it shows both paths students need to understand: generating an ontology from a Power BI semantic model and building one directly from OneLake data. In Part 1 of the tutorial, you create the ontology item and start turning the prepared source data into named business entities.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Prepare the ontology tutorial environment</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Complete Tutorial Part 1 - Create an Ontology</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Prepare the Microsoft Learn ontology tutorial environment so you have a real ontology scenario to examine in this module. Do not copy the Microsoft tutorial steps into this repository; use the tutorial as the hands-on lab source.
+Create the ontology item from the tutorial environment you prepared in section 5.1. Use the Microsoft Learn tutorial for the procedural steps, then come back here to connect the activity to the modeling concepts.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-0-introduction">Tutorial Part 0: Introduction and Environment Setup</a> in a new browser tab.
-2. Follow the tutorial steps to choose either the semantic model path or the OneLake path.
-3. Prepare the Lakeshore Retail sample data, lakehouse, semantic model if selected, and eventhouse items described in the tutorial.
-4. When the tutorial environment is ready, write down the entity types, properties, and relationships you expect the ontology to expose.
-5. Keep the tutorial tab open. Later activities in this module use the same scenario to discuss bindings, instructions, and evaluation.
+1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-1-create-ontology">Tutorial Part 1: Create an Ontology</a> in a new browser tab.
+2. Follow the tutorial steps for the same creation method you selected in section 5.1.
+3. Create the ontology item and review the generated or manually created entity types.
+4. Write down the entity types, properties, and relationships you expect students to recognize from the tutorial scenario.
+5. Identify any names that feel too technical and should be renamed into business language.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -196,6 +197,7 @@ Turn your model into practical data agent configuration by drafting instructions
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent">Fabric data agent creation - Microsoft Fabric</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-end-to-end-tutorial">Fabric data agent scenario</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-0-introduction">Tutorial Part 0: Introduction and Environment Setup</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-1-create-ontology">Tutorial Part 1: Create an Ontology</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate your data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing">Fabric data agent sharing and permission management</a></li>
 </ul>
