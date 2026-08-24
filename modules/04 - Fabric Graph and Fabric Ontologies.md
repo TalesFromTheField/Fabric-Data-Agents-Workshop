@@ -46,11 +46,12 @@ You can answer these questions with joins, but the query gets ugly fast because 
 
 For data agents, this matters because Fabric already supports ontologies as a data source. That means the agent can use an ontology alongside lakehouses, warehouses, semantic models, mirrored databases, and KQL databases. The agent still runs under the user's permissions and remains read-only, but the ontology gives it a more business-aware route through the data.
 
-The important design decision is not "Graph or Ontology?" The better question is, "Do I need the lower-level graph surface, or do I need a business abstraction that uses graph relationships underneath?"
+For most Fabric data agent scenarios, the practical answer is to use an **ontology**. Graph is still important because it explains how connected data works underneath the covers, but the ontology is the model you want business users, applications, and agents to share.
 
-Use **Graph directly** when you need to learn or inspect the mechanics of connected data: nodes, edges, keys, graph queries, and relationship traversal. Graph is also useful for highly technical scenarios where the team is comfortable modeling relationships explicitly and querying them with GQL.
-
-Use an **ontology** when the goal is a business-facing model that agents, applications, and users can share. The ontology still gives you graph-style relationships, but it packages them with business names, properties, data bindings, and concepts that are easier to explain, govern, and reuse.
+| Approach | When it matters | What it gives you |
+| --- | --- | --- |
+| **Graph directly** | Useful for learning or inspecting the mechanics of connected data, including nodes, edges, keys, graph queries, and relationship traversal. It is also useful for highly technical scenarios where the team is comfortable modeling relationships explicitly and querying them with GQL. | A lower-level view of how connected data is represented and traversed. |
+| **Ontology** | Use when the goal is a business-facing model that agents, applications, and users can share. | Graph-style relationships packaged with business names, properties, data bindings, and concepts that are easier to explain, govern, and reuse. |
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Identify questions that need a graph</b></p>
 
