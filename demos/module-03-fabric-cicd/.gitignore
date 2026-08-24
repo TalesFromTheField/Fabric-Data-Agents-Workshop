@@ -1,11 +1,15 @@
-# Everything the demo generates at runtime. The exported workspace folder is a
-# copy of live Fabric items - regenerate it, don't commit it.
-workspace/
-.verify/
-.demo-state.json
-
 # Local Python environment
 .venv/
 venv/
 __pycache__/
 *.pyc
+.ruff_cache/
+
+# Scratch output from experimenting with the Fabric CLI export command
+exported/
+
+# Artifacts from the previous version of this demo, kept ignored so a stale
+# working copy cannot accidentally commit a real workspace export.
+workspace/
+.verify/
+.demo-state.json

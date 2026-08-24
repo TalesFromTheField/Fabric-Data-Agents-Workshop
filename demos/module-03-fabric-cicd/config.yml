@@ -1,0 +1,50 @@
+# =============================================================================
+# config.yml - configuration-driven deployment for fabric-cicd
+#
+# Everything the deployment needs lives here instead of being spread across
+# command-line flags. deploy.py passes this file to deploy_with_config(), which
+# builds the FabricWorkspace and runs publish/unpublish for you.
+#
+# The same file is what the Fabric CLI consumes:
+#     fab deploy --config config.yml --target_env PROD
+#
+# Docs: https://microsoft.github.io/fabric-cicd/latest/how_to/config_deployment/
+# =============================================================================
+
+core:
+    # Target workspace per environment. Set these to workspaces you have created.
+    # Workspace name is used here because it is readable in a demo; workspace_id
+    # takes precedence if you set both, and is what you want in a real pipeline.
+    workspace:
+        TEST: "Fabric Agents Workshop [test]"
+        PROD: "Fabric Agents Workshop [prod]"
+
+    # Where the items live, relative to this file.
+    repository_directory: "./sample-workspace"
+
+    # Restrict the blast radius to the item types this demo owns.
+    item_types_in_scope:
+        - Lakehouse
+        - Warehouse
+        - DataAgent
+
+    # The environment-specific value replacement, relative to this file.
+    parameter: "./sample-workspace/parameter.yml"
+
+publish:
+    # Nothing excluded - publish everything in the repository directory.
+    skip: false
+
+unpublish:
+    # Unpublishing deletes target items that no longer exist in the repository.
+    # It is the destructive half of "the repository is the source of truth", so
+    # the demo leaves it off. Set to false to see it in action.
+    #
+    # Note that lakehouses and warehouses are protected even then, and need the
+    # enable_lakehouse_unpublish / enable_warehouse_unpublish feature flags.
+    skip: true
+
+features:
+    # Makes deploy_with_config return the raw API responses on DeploymentResult,
+    # which deploy.py uses to report exactly what landed - no extra API calls.
+    - enable_response_collection

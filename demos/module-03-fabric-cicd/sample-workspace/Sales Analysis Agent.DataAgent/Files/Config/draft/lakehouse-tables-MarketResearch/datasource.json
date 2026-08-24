@@ -1,0 +1,138 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/dataSource/1.0.0/schema.json",
+  "artifactId": "33333333-3333-3333-3333-333333333333",
+  "workspaceId": "11111111-1111-1111-1111-111111111111",
+  "dataSourceInstructions": "Grain: SurveyResponses is one row per respondent per survey.\nSentimentScore ranges from -1 to 1; treat anything above 0.25 as positive.\nJoin SurveyResponses.ProductCategory to the warehouse DimProduct.ProductCategory when a question spans both sources.\nResponseDate is stored as a string in YYYY-MM-DD form and must be cast before date comparisons.",
+  "displayName": "MarketResearch",
+  "type": "lakehouse_tables",
+  "userDescription": null,
+  "metadata": {},
+  "elements": [
+    {
+      "id": "035f45b6-05f1-57d3-afff-2dafb809c8d3",
+      "is_selected": false,
+      "display_name": "Schemas",
+      "type": "schema_grouping",
+      "description": null,
+      "children": [
+        {
+          "id": "19a97c34-cd01-5589-b690-6e9d536ec3c3",
+          "is_selected": false,
+          "display_name": "dbo",
+          "type": "lakehouse_tables.schema",
+          "description": null,
+          "children": [
+            {
+              "id": "3b877c5e-ae58-597c-8c1f-9fd9a4ff2b34",
+              "is_selected": false,
+              "display_name": "Tables",
+              "type": "table_grouping",
+              "description": null,
+              "children": [
+                {
+                  "id": "9f3b3376-045e-58b2-bfa0-c6a04debac50",
+                  "is_selected": true,
+                  "display_name": "SurveyResponses",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "f4023c14-ca42-547d-8a51-4f7080188e39",
+                      "is_selected": true,
+                      "display_name": "ResponseId",
+                      "type": "lakehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    },
+                    {
+                      "id": "b834c751-e69a-51fb-a3ec-7fcfa816fc4f",
+                      "is_selected": true,
+                      "display_name": "ResponseDate",
+                      "type": "lakehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    },
+                    {
+                      "id": "032cea80-add0-5446-ba27-8a1364574bbf",
+                      "is_selected": true,
+                      "display_name": "ProductCategory",
+                      "type": "lakehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    },
+                    {
+                      "id": "74973323-e2c6-5d99-bec9-2808d76dfa8c",
+                      "is_selected": true,
+                      "display_name": "SentimentScore",
+                      "type": "lakehouse_tables.column",
+                      "description": null,
+                      "data_type": "float",
+                      "children": []
+                    },
+                    {
+                      "id": "e8ee5614-c31f-5e5c-83d7-2766768e5541",
+                      "is_selected": true,
+                      "display_name": "FreeTextComment",
+                      "type": "lakehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "93892a37-06a0-55e5-ab2e-e6f64bdb4ca2",
+                  "is_selected": true,
+                  "display_name": "CompetitorPricing",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "584e7e85-5e38-5fcc-9661-12c6374b7387",
+                      "is_selected": true,
+                      "display_name": "CompetitorName",
+                      "type": "lakehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    },
+                    {
+                      "id": "37a0d511-002c-53ff-abb9-44f9e1a53abe",
+                      "is_selected": true,
+                      "display_name": "ProductCategory",
+                      "type": "lakehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    },
+                    {
+                      "id": "2c21c5ae-2df3-5a52-8796-1295e6c48935",
+                      "is_selected": true,
+                      "display_name": "ObservedPrice",
+                      "type": "lakehouse_tables.column",
+                      "description": null,
+                      "data_type": "float",
+                      "children": []
+                    },
+                    {
+                      "id": "7e4cefb8-9fa5-5eaa-a358-d602e9107eb6",
+                      "is_selected": true,
+                      "display_name": "ObservedDate",
+                      "type": "lakehouse_tables.column",
+                      "description": null,
+                      "data_type": "varchar",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
