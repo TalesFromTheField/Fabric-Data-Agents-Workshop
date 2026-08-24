@@ -58,6 +58,8 @@ Start with lakehouse, warehouse, mirrored database, or KQL when the question can
 
 Also note an important configuration difference: data agent query examples and query instructions are not available for every source type in the same way. Today, SQL and KQL-backed sources give you the most direct path for adding example queries and shaping how the agent translates natural language into queries. Semantic models and ontologies bring stronger business meaning, but they do not currently support the same query-instruction pattern inside data agents. That means your design work shifts from writing query examples to making the model, metadata, definitions, and relationships as clear as possible.
 
+<p><a href="https://youtu.be/v0mD01QP5gY"><img src="https://img.youtube.com/vi/v0mD01QP5gY/0.jpg" height = 200></a></p>
+
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Translate business questions into modeling requirements</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
