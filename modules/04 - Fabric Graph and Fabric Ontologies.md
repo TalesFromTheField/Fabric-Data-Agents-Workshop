@@ -16,6 +16,10 @@ In each section you'll get more references, which you should follow up on to lea
 
 Relational models are excellent at storing facts. Graphs are excellent at explaining how things are connected. Ontologies are excellent at naming those things in a way the business recognizes. Put the three together and a data agent has a much better chance of answering questions that require more than a single lookup.
 
+This module starts with Graph because Graph explains the foundation. Fabric IQ is not a single item you create in a workspace. It is a collection of capabilities - Graph, ontologies, data agents, operations agents, semantic models, digital twin builder, and planning experiences - that work together to provide business context. Graph is the easiest way to see the mechanics: nodes represent things, edges represent relationships, and queries traverse those relationships.
+
+But that does not mean every team should start by building raw graphs. For most business-facing scenarios, the preferred abstraction is an ontology. An ontology is built on graph concepts, but it adds the business vocabulary, properties, relationships, bindings, and semantic meaning that people and agents need. In other words: learn Graph so you understand what is happening underneath; use Ontology when you want the business to reason over it.
+
 You'll cover these topics in the module:
 
 <dl>
@@ -41,6 +45,12 @@ Some questions are not really about rows. They are about paths.
 You can answer these questions with joins, but the query gets ugly fast because the shape of the question is not flat. It is connected. A graph model makes the relationship itself a first-class thing, and an ontology gives those relationships business names the agent can reason over.
 
 For data agents, this matters because Fabric already supports ontologies as a data source. That means the agent can use an ontology alongside lakehouses, warehouses, semantic models, mirrored databases, and KQL databases. The agent still runs under the user's permissions and remains read-only, but the ontology gives it a more business-aware route through the data.
+
+The important design decision is not "Graph or Ontology?" The better question is, "Do I need the lower-level graph surface, or do I need a business abstraction that uses graph relationships underneath?"
+
+Use **Graph directly** when you need to learn or inspect the mechanics of connected data: nodes, edges, keys, graph queries, and relationship traversal. Graph is also useful for highly technical scenarios where the team is comfortable modeling relationships explicitly and querying them with GQL.
+
+Use an **ontology** when the goal is a business-facing model that agents, applications, and users can share. The ontology still gives you graph-style relationships, but it packages them with business names, properties, data bindings, and concepts that are easier to explain, govern, and reuse.
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Identify questions that need a graph</b></p>
 
@@ -79,7 +89,11 @@ A practical graph design for agent scenarios should include:
 | Properties on edges | Captures dates, quantities, status, or confidence of a relationship |
 | Synonyms and definitions | Handles real user language instead of schema-only vocabulary |
 
-If the model cannot explain the path in English, the agent probably should not explain the answer to a user yet.
+In a direct graph build, you create these pieces explicitly. In the Fabric IQ Graph tutorial, each source table becomes a node: customers, employees, orders, products, product categories, product subcategories, vendors, and so on. Each relationship becomes an edge: customers purchase orders, employees sell orders, orders contain products, products belong to categories, and vendors produce products.
+
+That exercise is valuable because it shows the pattern clearly. It also shows why a raw graph can become a lot of manual design work. You need to create the nodes, map the keys, define the edges, name the relationships, and validate the path. If the model cannot explain the path in English, the agent probably should not explain the answer to a user yet.
+
+Graph also introduces its own query surface. Fabric Graph supports visual exploration and GQL-style querying, and those queries can be case-sensitive. That is powerful, but it is not the same thing as a business user asking a natural-language question. This is another reason ontology becomes important: it lets you keep the relationship power of Graph while presenting a higher-level business model to agents and users.
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Convert the ontology map into a graph design</b></p>
 
@@ -102,6 +116,10 @@ Use the graph candidate list from section 4.1 as the starting point for a graph 
 
 Fabric data agents can use an ontology as a selected data source. That is the key connection for this workshop: the ontology is not just documentation sitting next to the system. It becomes part of the agent's answer path.
 
+This is the reason we do not want students walking away thinking, "I need to build a graph for every business problem." Graph is the foundation. Ontology is the business-facing layer built on top of that foundation.
+
+In the video example, a small ontology is created with customers and orders, then a *purchases* relationship connects them. The result still behaves like a graph: you can see customers, orders, and the relationship path between them. But now the model is expressed as business concepts and relationships that can be reused by data agents.
+
 When you add an ontology to a data agent, treat it with the same discipline as any other governed source:
 
 - Add only the subject area needed for the workshop scenario.
@@ -112,20 +130,20 @@ When you add an ontology to a data agent, treat it with the same discipline as a
 
 This is also where permissions matter. The data agent does not magically bypass access controls because the source is more semantic. Users still need read access to the data source, and downstream answers still respect Fabric governance.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Add ontology routing guidance to the agent</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Decide whether to model with Graph or Ontology</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Create the instruction pattern that tells the data agent when ontology-backed reasoning should be used.
+Decide when the lower-level Graph experience is appropriate and when the better answer is to build an ontology that uses graph relationships underneath.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Open your Fabric data agent draft.
-2. Confirm the ontology source is available and that you have read access to it.
-3. Add the ontology source to the data agent.
-4. Add instructions that route relationship, dependency, ownership, lineage, and impact questions to the ontology.
-5. Add instructions that route approved financial measures to the semantic model when those measures exist there.
-6. Test one lookup question, one aggregation question, and one relationship question. Confirm the agent chooses the expected source.
+1. Pick one relationship-heavy question from section 4.1.
+2. List the nodes and edges you would need if you modeled the question directly in Graph.
+3. List the entity types, properties, relationships, and data bindings you would need if you modeled the same question as an ontology.
+4. Decide which path is easier to explain to a business stakeholder.
+5. Decide which path is easier for a data agent to use safely.
+6. Write down the design decision: use direct Graph for technical traversal and inspection, or use Ontology for business-facing agent consumption.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -142,6 +160,8 @@ For workshop scenarios, use three repeatable demo patterns:
 3. **Relationship explanation** - Why are these two things connected?
 
 The answer should include the path. If the agent says "Supplier A affects Region B," ask it to explain how. The explanation is what tells you whether the model reasoned over the graph or guessed from nearby labels.
+
+This is where the Graph/Ontology distinction matters most. Graph teaches you how the path is built. Ontology helps you package that path so a business user can ask about it naturally and a data agent can answer using governed business meaning.
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Test a multi-hop impact question</b></p>
 
@@ -167,6 +187,7 @@ Validate whether the model can answer and explain a connected-data question.
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-end-to-end-tutorial">Fabric data agent scenario</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate your data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-tenant-settings">Fabric data agent tenant settings</a></li>
+  <li><a href="https://youtu.be/N6hkxnuOQ8k">Microsoft Fabric: Fabric IQ Graph Tutorial</a></li>
 </ul>
 
 Congratulations! You have completed this module on Fabric Graph &amp; Fabric Ontologies. You now have a starter pattern for relationship traversal, dependency analysis, and multi-hop reasoning that can feed the extension scenarios in the next modules.
