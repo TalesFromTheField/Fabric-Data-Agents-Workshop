@@ -661,6 +661,8 @@ Understanding this layout is what makes a data agent diff readable in a pull req
 - **publish_info.json** contains the publishing description - the one from Module 02. You can edit this file to change the description that appears when the agent is published.
 - The **draft** folder holds the configuration of the draft version; the **published** folder holds the published version.
 
+> **Note:** `publish_info.json` and the `published` folder only appear once the agent has actually been published. An agent that has never been published contains just `data_agent.json` and the `draft` folder - a quick way to tell, from the repository alone, whether an agent is consumable.
+
 <p><img style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" src="https://learn.microsoft.com/en-us/fabric/data-science/media/data-agent-cicd/git-config-draft.png" height="400"></p>
 
 Inside the **draft** folder you'll find **stage_config.json**, which contains `aiInstructions` - your agent-level instructions from section 3.1 - plus one folder per data source, named by source type:
@@ -670,7 +672,7 @@ Inside the **draft** folder you'll find **stage_config.json**, which contains `a
   <tr><th style="background-color: #1b20a1; color: white;">Data source</th> <th style="background-color: #1b20a1; color: white;">Folder name prefix</th></tr>
 
   <tr><td>Lakehouse</td><td><code>lakehouse-tables-</code> followed by the lakehouse name</td></tr>
-  <tr><td>Warehouse</td><td><code>warehouse-tables-</code> followed by the warehouse name</td></tr>
+  <tr><td>Warehouse</td><td><code>data-warehouse-</code> followed by the warehouse name</td></tr>
   <tr><td>Semantic model</td><td><code>semantic-model-</code> followed by the model name</td></tr>
   <tr><td>KQL database</td><td><code>kusto-</code> followed by the KQL database name</td></tr>
   <tr><td>Ontology</td><td><code>ontology-</code> followed by the ontology name</td></tr>
@@ -679,15 +681,21 @@ Inside the **draft** folder you'll find **stage_config.json**, which contains `a
 
 <br>
 
-Each data source folder contains **datasource.json** and **fewshots.json** - except semantic models, which don't support example queries and therefore have only **datasource.json**.
+Each data source folder contains **datasource.json** and, once you've added example queries, **fewshots.json**. Semantic models don't support example queries and therefore only ever have **datasource.json**. A source you haven't written examples for won't have a `fewshots.json` at all.
 
 **datasource.json** defines that source's configuration:
 
+- `artifactId` - the **ID of the data source item** the agent is attached to.
+- `workspaceId` - the ID of the workspace that item lives in.
 - `dataSourceInstructions` - the instructions you wrote in section 3.3.
 - `displayName` - the name of the data source.
 - `elements` - the schema map, listing every table and column in the source.
 
+Those first two fields are the ones that matter for CI/CD. They are recorded as literal GUIDs, so an agent promoted to another workspace still points at the *original* data source unless something rewrites them. That's the problem section 3.6's `parameter.yml` exists to solve.
+
 Each table carries an `is_selected` property: `true` means the agent can use it, `false` means it can't. Column entries also show `is_selected`, but **column-level selection isn't currently supported** - if a table is selected, all of its columns are included regardless of the column value, and if a table isn't selected, none of its columns are considered even when their `is_selected` is `true`. Types follow a convention: a data source is its own type (`"type": "lakehouse_tables"`), a table ends in `.table`, and a column ends in `.column`.
+
+`elements` isn't always a flat list. A warehouse source nests its entries - a `schema_grouping` element containing `warehouse_tables.schema` entries, each holding the tables - so read the tree rather than assuming one level.
 
 **fewshots.json** stores the example queries from section 3.2. Each entry has an `id`, the natural language `question`, and the `query` text, which may be SQL or KQL depending on the source type.
 
@@ -718,6 +726,57 @@ The **Azure DevOps Pipelines extension for Fabric** provides native tasks that r
 For large-scale synchronization, the **Import/Export Item Definitions Batch APIs** (preview) let you export and import data agent definitions in batch to streamline promotion across environments.
 
 > **Important:** Service principals are supported in the Fabric data agent **only** as part of ALM scenarios - Git integration and deployment pipelines. That support doesn't extend to other data agent features. If you need to interact with a data agent outside of ALM workflows, service principal isn't supported.
+
+### Code-first deployment with fabric-cicd
+
+Deployment pipelines are driven from the Fabric portal. When you'd rather drive promotion from a pipeline definition alongside the rest of your infrastructure, Microsoft publishes [**fabric-cicd**](https://microsoft.github.io/fabric-cicd/), a Python library that deploys source-controlled Fabric items into a target workspace. **Data agents are a supported item type**, alongside lakehouses, warehouses, notebooks, semantic models, ontologies, and around two dozen others.
+
+The mental model is deliberately simple. You point the library at a directory of items - the one Git integration commits - name the workspace you're deploying into, and publish:
+
+```python
+from azure.identity import AzureCliCredential
+from fabric_cicd import FabricWorkspace, publish_all_items
+
+target_workspace = FabricWorkspace(
+    workspace_id="your-prod-workspace-id",
+    environment="PROD",                       # matches a key in parameter.yml
+    repository_directory="./workspace",       # what Git integration committed
+    item_type_in_scope=["Lakehouse", "Notebook", "DataAgent"],
+    token_credential=AzureCliCredential(),
+)
+
+publish_all_items(target_workspace)
+```
+
+Two behaviors are worth internalizing before you use it. First, it performs a **full deployment every time** - it doesn't inspect commit diffs, it makes the target workspace match the repository. Second, it matches items by **name and type**, so running the same deployment twice updates rather than duplicates.
+
+The interesting problem is the one the code above doesn't solve. Recall from the file layout above that a data agent's `datasource.json` records the **ID** of each attached data source. Deploy that file unchanged into production and the agent arrives correctly configured - and pointed at the *development* lakehouse. It won't error. It will answer questions, confidently, from the wrong environment.
+
+The fix is a `parameter.yml` file in the root of your repository directory, which rewrites environment-specific values at deploy time:
+
+```yaml
+find_replace:
+    - find_value: "8f3c1d2e-..."                        # dev lakehouse ID
+      replace_value:
+          PROD: "$items.Lakehouse.Cold Chain LH.$id"    # whatever it is in the target
+      item_type: "DataAgent"
+```
+
+`$items.<Type>.<Name>.$id` is resolved by the library against the workspace it's deploying into, so the file contains no target-specific GUIDs and keeps working as you add environments. Your source files are never modified - replacement happens in memory during deployment.
+
+One failure mode to watch: if the `environment` value you pass doesn't match a key in `parameter.yml`, replacements are silently skipped. The deployment succeeds, and the agent keeps its development values.
+
+<br>
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Ship Your Agent Like Code</b></p>
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
+
+Deploy the data agent you built in this module out of your workspace and into a separate production workspace using fabric-cicd - then prove it's reading production data and not the data you developed against.
+
+<p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
+
+Follow the walkthrough in [demos/module-03-fabric-cicd](../demos/module-03-fabric-cicd/README.md). The demo runs in six stages you can stop between, creates the production workspace for you, and deletes it again when you're done. It also includes ready-to-adapt GitHub Actions and Azure DevOps pipeline definitions.
 
 ### Publishing in a promoted world
 
@@ -797,6 +856,9 @@ Two habits tie the list together. First, **tune from evidence** - keep a benchma
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/semantic-model-best-practices" target="_blank">Semantic model sources for a Fabric data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/cicd/git-integration/intro-to-git-integration" target="_blank">What is Microsoft Fabric Git integration?</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/get-started-with-deployment-pipelines" target="_blank">Get started with deployment pipelines</a></li>
+  <li><a href="https://microsoft.github.io/fabric-cicd/latest/" target="_blank">fabric-cicd - code-first deployment for Fabric items</a></li>
+  <li><a href="https://microsoft.github.io/fabric-cicd/latest/how_to/parameterization/" target="_blank">fabric-cicd parameterization reference</a></li>
+  <li><a href="https://microsoft.github.io/fabric-cli/" target="_blank">Fabric CLI - <code>fab deploy</code> runs fabric-cicd for you</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/get-started/whats-new" target="_blank">As always, this is a fast-changing technology, so check this reference for the latest improvements</a></li>
 </ul>
 

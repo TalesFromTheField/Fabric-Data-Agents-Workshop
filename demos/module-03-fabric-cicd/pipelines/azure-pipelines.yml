@@ -1,0 +1,110 @@
+# =============================================================================
+# Azure DevOps Pipelines - deploy Fabric items with fabric-cicd
+#
+# Assumes your Fabric workspace is connected to this Azure Repos repository
+# through Fabric Git integration, so the workspace folder is committed here.
+#
+# One-time setup:
+#   1. Create an ARM service connection in Project Settings > Service
+#      connections. Note its name and set it as the `serviceConnection` variable.
+#   2. Grant that service connection's identity Contributor or Admin on the
+#      target Fabric workspace.
+#   3. Enable Fabric tenant setting "Service principals can use Fabric APIs".
+#   4. Create Environments named PPE and PROD if you want approval gates.
+#
+# The AzureCLI@2 task establishes an `az login` session, which
+# AzureCliCredential then picks up - no secrets are handled in the script.
+#
+# Alternative: the Azure DevOps Pipelines extension for Fabric provides native
+# tasks that run Fabric CLI commands, which shells out to fabric-cicd for
+# deployment. Use it if you prefer tasks over a Python step.
+# =============================================================================
+
+trigger:
+  branches:
+    include: [main]
+  paths:
+    include:
+      - workspace/*
+      - demos/module-03-fabric-cicd/ci_deploy.py
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  # fabric-cicd advertises 3.9 support but does not import on it.
+  pythonVersion: "3.12"
+  serviceConnection: "fabric-deployment"
+  repositoryDirectory: "$(Build.SourcesDirectory)/workspace"
+  itemTypes: "Lakehouse,Notebook,SemanticModel,DataAgent"
+
+stages:
+  - stage: PPE
+    displayName: Deploy to PPE
+    jobs:
+      - deployment: deploy_ppe
+        environment: PPE
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: $(pythonVersion)
+
+                - script: pip install -r demos/module-03-fabric-cicd/requirements.txt
+                  displayName: Install fabric-cicd
+
+                - task: AzureCLI@2
+                  displayName: Deploy to Fabric (PPE)
+                  inputs:
+                    azureSubscription: $(serviceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: python demos/module-03-fabric-cicd/ci_deploy.py
+                  env:
+                    FABRIC_WORKSPACE_ID: $(FABRIC_WORKSPACE_ID_PPE)
+                    FABRIC_ENVIRONMENT: PPE
+                    FABRIC_REPOSITORY_DIRECTORY: $(repositoryDirectory)
+                    FABRIC_ITEM_TYPES: $(itemTypes)
+                    FABRIC_UNPUBLISH_ORPHANS: "false"
+                    # SYSTEM_DEBUG is set when you queue a build with diagnostics.
+                    FABRIC_DEBUG: $(System.Debug)
+
+  - stage: PROD
+    displayName: Deploy to PROD
+    dependsOn: PPE
+    condition: succeeded()
+    jobs:
+      - deployment: deploy_prod
+        # Attach approvals/checks to this Environment in the Azure DevOps UI.
+        environment: PROD
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: $(pythonVersion)
+
+                - script: pip install -r demos/module-03-fabric-cicd/requirements.txt
+                  displayName: Install fabric-cicd
+
+                - task: AzureCLI@2
+                  displayName: Deploy to Fabric (PROD)
+                  inputs:
+                    azureSubscription: $(serviceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: python demos/module-03-fabric-cicd/ci_deploy.py
+                  env:
+                    FABRIC_WORKSPACE_ID: $(FABRIC_WORKSPACE_ID_PROD)
+                    FABRIC_ENVIRONMENT: PROD
+                    FABRIC_REPOSITORY_DIRECTORY: $(repositoryDirectory)
+                    FABRIC_ITEM_TYPES: $(itemTypes)
+                    FABRIC_UNPUBLISH_ORPHANS: "false"
+                    FABRIC_DEBUG: $(System.Debug)
