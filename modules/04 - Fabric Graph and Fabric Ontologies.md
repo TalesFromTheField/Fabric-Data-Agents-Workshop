@@ -26,7 +26,7 @@ You'll cover these topics in the module:
 
   <dt><a href="#4-1">4.1 - Why Connected Data Changes the Question</a></dt>
   <dt><a href="#4-2">4.2 - Nodes, Edges, and Business Relationships</a></dt>
-  <dt><a href="#4-3">4.3 - Fabric Ontologies as an Agent Source</a></dt>
+  <dt><a href="#4-3">4.3 - When Graph Modeling Becomes Business Modeling</a></dt>
   <dt><a href="#4-4">4.4 - Multi-Hop Reasoning, Dependency, and Impact Analysis</a></dt>
 
 </dl>
@@ -117,25 +117,15 @@ Create the explicit graph structure: nodes for entities and edges for the relati
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2 id="4-3"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">4.3 - Fabric Ontologies as an Agent Source</h2>
-
-Fabric data agents can use an ontology as a selected data source. That is the key connection for this workshop: the ontology is not just documentation sitting next to the system. It becomes part of the agent's answer path.
+<h2 id="4-3"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">4.3 - When Graph Modeling Becomes Business Modeling</h2>
 
 This is the reason we do not want students walking away thinking, "I need to build a graph for every business problem." Graph is the foundation. Ontology is the business-facing layer built on top of that foundation.
 
-In the video example, a small ontology is created with customers and orders, then a *purchases* relationship connects them. The result still behaves like a graph: you can see customers, orders, and the relationship path between them. But now the model is expressed as business concepts and relationships that can be reused by data agents.
+The graph tutorial shows the modeling move that makes this clear: a single source table can contain more than one business concept. In the tutorial, the Employees table contains a `Country` value. You can leave country as an employee property, or you can promote it into its own `Country` node and connect employees to countries with a `livesIn` edge.
 
-When you add an ontology to a data agent, treat it with the same discipline as any other governed source:
+That is a useful Graph exercise because it teaches the mechanics of modeling relationships explicitly. It also exposes the moment when the conversation stops being about graph structure and starts being about business meaning. When you start promoting values into concepts, naming relationships, and deciding what should be reusable across the business, you are moving toward ontology design.
 
-- Add only the subject area needed for the workshop scenario.
-- Describe when the agent should use the ontology instead of a table or semantic model.
-- Define synonyms that users actually say.
-- Keep definitions short, precise, and business-approved.
-- Test questions that require the ontology and questions that should route somewhere else.
-
-This is also where permissions matter. The data agent does not magically bypass access controls because the source is more semantic. Users still need read access to the data source, and downstream answers still respect Fabric governance.
-
-The graph tutorial also shows one more modeling move: a single source table can contain more than one business concept. In the tutorial, the Employees table contains a `Country` value. You can leave country as an employee property, or you can promote it into its own `Country` node and connect employees to countries with a `livesIn` edge. That is the exact kind of modeling decision that helps explain why ontologies become valuable: the more the model starts representing business concepts, the more you want a business-facing abstraction instead of a raw graph canvas.
+In the video example, a small ontology is created with customers and orders, then a *purchases* relationship connects them. The result still behaves like a graph: you can see customers, orders, and the relationship path between them. But now the model is expressed as business concepts and relationships that can be reused later in the workshop.
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Compare direct Graph modeling to ontology modeling</b></p>
 
