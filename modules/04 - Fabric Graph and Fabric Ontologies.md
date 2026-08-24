@@ -53,7 +53,7 @@ For most Fabric data agent scenarios, the practical answer is to use an **ontolo
 | **Graph directly** | Useful for learning or inspecting the mechanics of connected data, including nodes, edges, keys, graph queries, and relationship traversal. It is also useful for highly technical scenarios where the team is comfortable modeling relationships explicitly and querying them with GQL. | A lower-level view of how connected data is represented and traversed. |
 | **Ontology** | Use when the goal is a business-facing model that agents, applications, and users can share. | Graph-style relationships packaged with business names, properties, data bindings, and concepts that are easier to explain, govern, and reuse. |
 
-Related video: <a href="https://youtu.be/N6hkxnuOQ8k">Microsoft Fabric: Fabric IQ Graph Tutorial</a>
+<p><a href="https://youtu.be/N6hkxnuOQ8k"><img src="https://img.youtube.com/vi/N6hkxnuOQ8k/0.jpg" height = 200></a></p>
 
 The Microsoft Learn graph tutorial starts with the Adventure Works dataset and a new graph model. That setup is useful here because it lets you see why connected questions need a connected model before you decide whether the final business-facing implementation belongs in an ontology.
 
