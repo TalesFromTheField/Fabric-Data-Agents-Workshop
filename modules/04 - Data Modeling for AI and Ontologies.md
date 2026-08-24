@@ -33,14 +33,30 @@ You'll cover these topics in the module:
 
 Natural language feels flexible because people carry context around in their heads. Agents do not. When a user asks, "Which customers are at risk?" the data agent has to translate that sentence into a scoped, read-only query against specific data sources. Without a model, it has to infer too much: which customer table, which date range, which measure, which relationships, and what "at risk" means this week.
 
-Fabric data agents improve answers by combining selected sources with metadata, instructions, and examples. Microsoft Learn describes the supported source pattern as lakehouses, warehouses, Power BI semantic models, KQL databases, mirrored databases, and ontologies. The important workshop point is that these are not just connection types. They are different ways of expressing meaning.
+Fabric data agents improve answers by combining selected sources with metadata, instructions, and examples. Microsoft Learn describes the supported source pattern as lakehouses, warehouses, Power BI semantic models, KQL databases, mirrored databases, and ontologies. The important workshop point is that these are not just connection types. They are different ways of matching a user question to the right level of business meaning.
 
-- A **lakehouse or warehouse** gives the agent tables, columns, and joins.
-- A **Power BI semantic model** gives the agent measures, relationships, row-level security, and business-friendly metadata.
-- A **KQL database** gives the agent event and time-series structures.
-- An **ontology** gives the agent business concepts, properties, and relationships that can sit above the physical storage layer.
+Choosing the right data source is one of the most important design decisions you make for a Fabric data agent. Start with the simplest governed source that can answer the question clearly.
 
-The better the model, the less the agent has to guess. And less guessing is usually where the magic lives.
+For most organizations, the first data agent should connect to a **lakehouse, warehouse, mirrored database, or KQL database**. These sources give the agent direct access to tables, columns, relationships, and queryable structures. They are the best starting point when users need grounded answers over well-understood operational, analytical, or event data.
+
+Use a **Power BI semantic model** when the business logic already lives there. If a business group has invested in certified measures, relationships, hierarchies, friendly names, and row-level security, the semantic model can help the agent answer questions in the same language the business already uses. This is especially useful for questions about approved KPIs, financial metrics, or curated departmental reporting areas.
+
+Use an **ontology** when the question is less about a single dataset and more about business concepts and relationships. Ontologies help describe entities, properties, and relationships across a business domain, so the agent can reason over concepts such as stores, products, assets, incidents, suppliers, customers, and how those things connect.
+
+A practical way to think about this is:
+
+| If the user needs to ask... | Start with... | Why |
+| --- | --- | --- |
+| Questions over tables, transactions, facts, dimensions, or curated data | Lakehouse, warehouse, or mirrored database | Direct access to structured data with clear tables, columns, and joins |
+| Questions over logs, telemetry, events, or time-series patterns | KQL database | Designed for high-volume event and time-based analysis |
+| Questions over approved business metrics and reporting definitions | Power BI semantic model | Reuses measures, relationships, metadata, and security already defined for the business |
+| Questions over business concepts, entity relationships, dependencies, or impact paths | Ontology | Describes the business domain above the physical storage layer |
+
+The hierarchy is not about which source is "best." It is about matching the source to the question.
+
+Start with lakehouse, warehouse, mirrored database, or KQL when the question can be answered from the data structure itself. Move to a semantic model when the question depends on curated business logic. Move to an ontology when the question depends on business concepts and relationships that span across tables, models, or operational domains.
+
+Also note an important configuration difference: data agent query examples and query instructions are not available for every source type in the same way. Today, SQL and KQL-backed sources give you the most direct path for adding example queries and shaping how the agent translates natural language into queries. Semantic models and ontologies bring stronger business meaning, but they do not currently support the same query-instruction pattern inside data agents. That means your design work shifts from writing query examples to making the model, metadata, definitions, and relationships as clear as possible.
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Translate business questions into modeling requirements</b></p>
 
