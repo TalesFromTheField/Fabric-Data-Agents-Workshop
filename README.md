@@ -4,6 +4,9 @@
 
 #### <i>A Microsoft Workshop from the Tales from the Field Team</i>
 
+[https://aka.ms/workshop/fabric-data-agents](https://aka.ms/workshop/fabric-data-agents)
+
+
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <img style="float: left; margin: 0px 15px 15px 0px;" src="https://raw.githubusercontent.com/microsoft/sqlworkshops/master/graphics/textbubble.png"> <h2>About this Workshop</h2>
