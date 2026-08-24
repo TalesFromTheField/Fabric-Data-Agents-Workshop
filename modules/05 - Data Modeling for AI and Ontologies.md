@@ -136,27 +136,32 @@ Use this pattern when binding concepts:
 
 The data agent still respects the permissions of the user asking the question. Modeling does not grant access. It gives the agent a better map of what it is already allowed to query.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Create a concept-to-source binding table</b></p>
+Part 2 of the ontology tutorial is where this concept becomes practical. You enrich the ontology by adding a new *Freezer* entity type, binding static data from the lakehouse, binding time-series data from Eventhouse, and creating the relationship that connects stores to the freezers they operate.
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Complete Tutorial Part 2 - Enrich the Ontology with Additional Data</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Build the mapping table that connects business terms to the Fabric source the data agent should use.
+Bind additional business concepts to physical data so the ontology represents both relatively static business data and live operational context.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Create a table with these columns: Business concept, Definition, Source item, Physical table or model object, Key, Important properties, Relationships, Security note.
-2. Fill in at least five business concepts from your ontology map.
-3. For each concept, identify whether the preferred answer path is SQL, DAX, KQL, or ontology traversal.
-4. Add one security note per concept: public reference data, role-filtered data, column-restricted data, or sensitive data.
-5. Use the table to decide which Fabric source should be added to the data agent first.
+1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-2-enrich-ontology">Tutorial Part 2: Enrich the Ontology with Additional Data</a> in a new browser tab.
+2. Follow the tutorial steps to add the *Freezer* entity type.
+3. Bind the static freezer data from the lakehouse.
+4. Bind the time-series freezer telemetry from Eventhouse.
+5. Create the relationship type that connects *Store* to *Freezer*.
+6. When you finish, write down which business concept, source item, key, properties, and relationship were added.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <h2 id="5-4"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">5.4 - Instructions, Examples, and Evaluation</h2>
 
-The model is not done when the objects exist. The agent needs guidance on how to use them.
+The model is not done when the objects exist. First, you need to inspect whether the ontology behaves the way the business expects. Then the agent needs guidance on when to use it.
 
 Microsoft Learn calls out two configuration levers that matter here: **data agent instructions** and **example queries**. Instructions tell the data agent how to choose sources and interpret business language. Example queries show the agent what a correct translation looks like for common questions. Evaluation gives you a repeatable way to test whether the agent is improving or just becoming more confident while being wrong, which is the worst kind of wrong.
+
+Part 3 of the ontology tutorial is the bridge between modeling and agent design. You view entity instances, inspect relationship graphs, and use graph queries to validate whether the ontology explains the business path you expected.
 
 Useful instruction patterns:
 
@@ -174,21 +179,21 @@ Useful evaluation patterns:
 - Include permission-sensitive cases if your environment has RLS or CLS.
 - Re-run the same set after every modeling or instruction change.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Write instructions and a starter evaluation set</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Complete Tutorial Part 3 - View the Ontology</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Turn your model into practical data agent configuration by drafting instructions and evaluation questions.
+Inspect the ontology through entity instances, relationship graphs, and graph queries before you decide how the data agent should use it.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Open your Fabric data agent draft.
-2. Add instructions that define your top ambiguous business terms.
-3. Add source-routing guidance for at least three question types.
-4. Add three example question/query pairs for SQL or KQL-backed sources where examples are supported.
-5. Create an evaluation list with at least ten questions and expected answers.
-6. Include two questions the agent should refuse, redirect, or answer with a clear limitation.
-7. Run the evaluation process described in <a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate your data agent</a>, or save the list for the Module 07 SDK path if your tenant is not ready yet.
+1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-3-preview-ontology">Tutorial Part 3: View the Ontology</a> in a new browser tab.
+2. Follow the tutorial steps to view entity instances and time-series data.
+3. Explore the relationship graph for the tutorial entities.
+4. Run the tutorial's graph queries and observe how the relationship path explains the answer.
+5. Write three natural-language questions a data agent should route to this ontology.
+6. Write three questions that should still route to a lakehouse, warehouse, semantic model, or KQL database instead.
+7. Save those questions for your evaluation set and source-routing instructions.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -198,6 +203,8 @@ Turn your model into practical data agent configuration by drafting instructions
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-end-to-end-tutorial">Fabric data agent scenario</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-0-introduction">Tutorial Part 0: Introduction and Environment Setup</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-1-create-ontology">Tutorial Part 1: Create an Ontology</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-2-enrich-ontology">Tutorial Part 2: Enrich the Ontology with Additional Data</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-3-preview-ontology">Tutorial Part 3: View the Ontology</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate your data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing">Fabric data agent sharing and permission management</a></li>
 </ul>
