@@ -42,8 +42,6 @@ Fabric data agents improve answers by combining selected sources with metadata, 
 
 The better the model, the less the agent has to guess. And less guessing is usually where the magic lives.
 
-<p><a href="https://youtu.be/7ccFIUfjiIc"><img src="https://img.youtube.com/vi/7ccFIUfjiIc/0.jpg" height = 200></a></p>
-
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Translate business questions into modeling requirements</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
@@ -84,22 +82,21 @@ For an AI-ready model, define:
 
 Do not start by modeling everything. Start with the questions the agent must answer, then model the entities and relationships those questions actually need. Data models created by committee tend to become museums. Agents need maps.
 
-<p><a href="https://youtu.be/yCD8-qAIT2I"><img src="https://img.youtube.com/vi/yCD8-qAIT2I/0.jpg" height = 200></a></p>
+Microsoft's ontology tutorial uses a Lakeshore Retail scenario to create entities such as stores, products, sales events, and freezer telemetry. That scenario is useful here because it shows both paths students need to understand: generating an ontology from a Power BI semantic model and building one directly from OneLake data.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Draft a starter ontology map</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Prepare the ontology tutorial environment</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
 
-Create a first-pass ontology map for one subject area. This is a design artifact, not production configuration yet.
+Prepare the Microsoft Learn ontology tutorial environment so you have a real ontology scenario to examine in this module. Do not copy the Microsoft tutorial steps into this repository; use the tutorial as the hands-on lab source.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-1. Choose one subject area from your workshop dataset, such as Sales, Customers, Products, Support, or Operations.
-2. List the five to eight entity types users are most likely to ask about.
-3. For each entity, list the properties users would naturally mention.
-4. Draw the relationships between entities using business verbs: places, contains, belongs to, ships from, assigned to, impacts.
-5. Add synonyms for the terms your business uses inconsistently.
-6. Circle any term that requires an approved definition before an agent should answer questions about it.
+1. Right-click and open <a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-0-introduction">Tutorial Part 0: Introduction and Environment Setup</a> in a new browser tab.
+2. Follow the tutorial steps to choose either the semantic model path or the OneLake path.
+3. Prepare the Lakeshore Retail sample data, lakehouse, semantic model if selected, and eventhouse items described in the tutorial.
+4. When the tutorial environment is ready, write down the entity types, properties, and relationships you expect the ontology to expose.
+5. Keep the tutorial tab open. Later activities in this module use the same scenario to discuss bindings, instructions, and evaluation.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
@@ -119,8 +116,6 @@ Use this pattern when binding concepts:
 6. **Document security.** Example: row-level security by sales territory applies through the semantic model.
 
 The data agent still respects the permissions of the user asking the question. Modeling does not grant access. It gives the agent a better map of what it is already allowed to query.
-
-<p><a href="https://youtu.be/YJu9NQB3MuU"><img src="https://img.youtube.com/vi/YJu9NQB3MuU/0.jpg" height = 200></a></p>
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Create a concept-to-source binding table</b></p>
 
@@ -160,8 +155,6 @@ Useful evaluation patterns:
 - Include permission-sensitive cases if your environment has RLS or CLS.
 - Re-run the same set after every modeling or instruction change.
 
-<p><a href="https://youtu.be/1OOe9-EteL0"><img src="https://img.youtube.com/vi/1OOe9-EteL0/0.jpg" height = 200></a></p>
-
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><b>Activity: Write instructions and a starter evaluation set</b></p>
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Description</b></p>
@@ -184,9 +177,9 @@ Turn your model into practical data agent configuration by drafting instructions
 <ul>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent">Fabric data agent creation - Microsoft Fabric</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-end-to-end-tutorial">Fabric data agent scenario</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-0-introduction">Tutorial Part 0: Introduction and Environment Setup</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent">Evaluate your data agent</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-sharing">Fabric data agent sharing and permission management</a></li>
-  <li><a href="https://www.youtube.com/@Tales-from-the-Field">Tales from the Field YouTube channel</a></li>
 </ul>
 
 Congratulations! You have completed this module on Data Modeling for AI &amp; Ontologies. You now have a practical map from business language to Fabric data sources, plus the instructions and evaluation patterns you need before moving into graph traversal and ontology-driven reasoning.
