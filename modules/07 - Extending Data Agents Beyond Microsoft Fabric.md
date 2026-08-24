@@ -238,6 +238,16 @@ Everything in 7.1 through 7.4 is a *named* integration - Microsoft built a conne
 
 Your published data agent can be an MCP server, exposing exactly **one tool** - the agent itself. And when it is, the agent stops being "a thing with four supported front ends" and becomes a standard endpoint. That's why this section is listed last but may end up mattering most.
 
+There is a second MCP story to understand before you move into Skills for Fabric. Microsoft Fabric also provides Fabric MCP servers for broader Fabric operations. The **Fabric Core MCP Server** is a remote endpoint that exposes Fabric public APIs as typed MCP tools for workspaces, items, permissions, and folders. The **local Fabric MCP Server** runs on your machine for development workflows with API documentation, OneLake operations, and local-file integration.
+
+That distinction gives us the right order:
+
+| First | Then |
+| --- | --- |
+| **MCP server** gives the AI agent secure, typed, live access to Fabric or to a published data agent. | **Skills for Fabric** teach the AI agent what patterns, APIs, query syntax, and best practices to apply with that access. |
+
+Said another way: MCP is the connection and tool surface. Skills are the playbook. You want the agent to have the tool access first, then load the Fabric-specific instructions that tell it how to use that access correctly.
+
 Because the client decides when to call the tool, **your published description becomes the tool description the server advertises**. Third time this module has told you to write a good description, and this is the most literal version: orchestrators read that text to decide whether to call you at all.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Three things to know before you start</b></p>
@@ -255,9 +265,11 @@ One compliance note - with a named integration you know whose data policy applie
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
 - Open the following Link in another tab and follow the instructions <a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-mcp-server">Data agent as Model Context Protocol server</a>
+- Open the following Link in another tab and review <a href="https://learn.microsoft.com/en-us/rest/api/fabric/articles/mcp-servers/what-is-fabric-mcp-server">Fabric MCP Servers overview</a> so you understand the difference between a published data agent MCP endpoint, Fabric Core MCP Server, and the local Fabric MCP Server.
 - Connect from both clients in that article - Python and Visual Studio Code - and ask the same question from each. Compare the answers.
 - Read your agent's published description as though you were an orchestrator deciding whether to call it. If you wouldn't call it, rewrite it.
 - If you built anything on the Python client SDK in 7.3, sketch your migration to this endpoint. Remember the **August 26, 2026** date.
+- Before continuing to 7.7, write down which MCP server your scenario needs: the published data agent MCP endpoint, Fabric Core MCP Server, the local Fabric MCP Server, or a combination.
 
 > If you only reviewed the documentation in this Activity, ensure you bookmark each of these references and then perform the Activity in full once you do have your deployment.
 
@@ -265,9 +277,9 @@ One compliance note - with a named integration you know whose data policy applie
 
 <h2 id="7-7"><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png">7.7 - Skills for Fabric with GitHub Copilot and VS Code</h2>
 
-Everything so far has been about **consuming a published data agent**. Skills for Fabric are different. They are not another chat surface for a published agent. They are reusable instruction sets that teach AI coding tools how to work with Microsoft Fabric workloads from a developer environment.
+Everything so far has been about **consuming a published data agent** or exposing Fabric capabilities through MCP. Skills for Fabric are different. They are not another chat surface for a published agent, and they are not a replacement for MCP. They are reusable instruction sets that teach AI coding tools how to work with Microsoft Fabric workloads from a developer environment.
 
-Think of Skills for Fabric as the bridge between Fabric and AI-assisted development. GitHub Copilot, VS Code Copilot, Cursor, Claude Code, and similar tools do not automatically know Fabric REST APIs, T-SQL patterns, KQL patterns, notebook conventions, deployment workflows, or Power BI project structures. Skills package that knowledge into `SKILL.md` files, helper scripts, and resources so the coding agent can act like a Fabric-aware teammate.
+Think of Skills for Fabric as the second half of the pattern from 7.6. First, configure the MCP server or tool access so the AI agent can reach Fabric safely. Second, install Skills for Fabric so the agent knows the Fabric-specific way to use that access. GitHub Copilot, VS Code Copilot, Cursor, Claude Code, and similar tools do not automatically know Fabric REST APIs, T-SQL patterns, KQL patterns, notebook conventions, deployment workflows, or Power BI project structures. Skills package that knowledge into `SKILL.md` files, helper scripts, and resources so the coding agent can act like a Fabric-aware teammate.
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Skills tell the agent what to do; tools let it do it</b></p>
 
@@ -279,6 +291,8 @@ Skills are static guidance loaded into the AI tool's context. MCP servers and CL
 | **GitHub Copilot CLI / VS Code Copilot** | Provides the agent experience where the developer prompts, reviews, and iterates |
 | **MCP servers and CLIs** | Give the agent live access to Fabric, Power BI, local files, Desktop, and validation tools |
 | **Git / repository** | Holds the source-controlled Fabric project, PBIP/PBIR files, notebooks, scripts, and generated artifacts |
+
+Do not reverse the order. Installing a skill without the right MCP server or CLI access gives the agent advice it cannot act on. Exposing a server without skills gives the agent a powerful tool but not enough Fabric-specific judgment. Together, they create the useful pattern: **MCP first for access, Skills second for expertise.**
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkbox.png"><b>Where this fits with data agents</b></p>
 
@@ -300,7 +314,8 @@ The important teaching point is not that Copilot "makes reports." The point is t
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-- Open the following Link in another tab and review <a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-overview">Skills for Fabric overview</a>.
+- Confirm the MCP server choice you made at the end of section 7.6. If your scenario needs live Fabric access, configure the right MCP server before installing skills.
+- Open the following Link in another tab and review <a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-overview">Skills for Fabric overview</a>. Pay attention to the distinction between Skills and MCP servers: skills teach the agent what to do, MCP servers provide the live access to do it.
 - Open the following Link in another tab and follow the instructions <a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-install">Install Skills for Fabric</a>. If you are using GitHub Copilot CLI, install the Fabric collection and, if you are working with Power BI projects, the `powerbi-authoring` plugin.
 - Open the following Link in another tab and review <a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-discover">Discover available Skills for Fabric</a>. List the installed skills in your AI coding tool.
 - If you are using VS Code Copilot, review how VS Code detects skills from the local Copilot customization folder and confirm that the skill list is available in Chat.
@@ -340,6 +355,7 @@ True of the data-agent consumption paths: publish the agent, write a genuinely g
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/fabric-data-agent-foundry-observability">Observe a Fabric data agent with Microsoft Foundry</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-purview-governance">Audit data agent interactions with Microsoft Purview</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-end-to-end-tutorial">Fabric data agent end-to-end tutorial</a></li>
+  <li><a href="https://learn.microsoft.com/en-us/rest/api/fabric/articles/mcp-servers/what-is-fabric-mcp-server">Fabric MCP Servers overview</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-overview">Skills for Fabric overview</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-install">Install Skills for Fabric</a></li>
   <li><a href="https://learn.microsoft.com/en-us/fabric/fundamentals/skills-for-fabric-discover">Discover available Skills for Fabric</a></li>
